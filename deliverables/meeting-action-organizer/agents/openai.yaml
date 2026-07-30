@@ -1,0 +1,4 @@
+interface:
+  display_name: "会议纪要行动助手"
+  short_description: "转写会议录音，标出发言人和待核验语句，并生成行动项。"
+  default_prompt: "使用 $meeting-action-organizer 转写以下会议录音，逐句标明发言人并标记待核验内容。"

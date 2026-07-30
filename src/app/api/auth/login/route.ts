@@ -1,0 +1,5 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { payloadForRequest } from '@/lib/auth'
+const schema=z.object({email:z.string().email(),password:z.string().min(8).max(128)})
+export async function POST(request:NextRequest){const parsed=schema.safeParse(await request.json());if(!parsed.success)return NextResponse.json({message:'邮箱或密码无效'},{status:400});const {payload}=await payloadForRequest(request);try{const login=await payload.login({collection:'users',data:parsed.data});if(!login.user||!login.token)return NextResponse.json({message:'邮箱或密码错误'},{status:401});if(login.user.disabled)return NextResponse.json({message:'账号已被禁用'},{status:403});const response=NextResponse.json({user:{id:login.user.id,name:login.user.name,email:login.user.email}});const options={httpOnly:true,sameSite:'lax' as const,secure:process.env.NODE_ENV==='production',path:'/'};response.cookies.set('agenthub-user-token',login.token,options);if(['admin','superadmin'].includes(login.user.role ?? ''))response.cookies.set('agenthub-admin-token',login.token,options);return response}catch{return NextResponse.json({message:'邮箱或密码错误'},{status:401})}}

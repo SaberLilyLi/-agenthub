@@ -1,0 +1,115 @@
+{
+  "ok": true,
+  "folder": "INBOX",
+  "description": "演示收件箱 — 模拟一家 B2B SaaS 公司销售团队收到的客户邮件，覆盖询盘/跟进/报价/投诉/催办/其他六种意图",
+  "messages": [
+    {
+      "uid": "201",
+      "message_id": "<inquiry-201@client-haoyuan.com>",
+      "thread_id": "thread-inquiry-201",
+      "from": "吴芳 <wufang@haoyuan-tech.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "subject": "想了解智能客服产品的功能和价格",
+      "date": "Fri, 24 Jul 2026 08:30:00 +0800",
+      "body": "您好，我在朋友推荐下了解到贵司的智能客服产品。我们公司大约有 200 人，目前使用的是传统客服系统，想了解以下内容：1. 产品支持哪些渠道（网页、微信、APP）？2. 是否支持智能路由和自动回复？3. 企业版和标准版的区别是什么？4. 能否安排一次产品演示？期待您的回复，谢谢！",
+      "has_attachments": false
+    },
+    {
+      "uid": "202",
+      "message_id": "<followup-202@client-jinmao.com>",
+      "thread_id": "thread-quote-102",
+      "from": "马骏 <majun@jinmao-group.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "subject": "跟进：上周提交的报价方案是否有更新",
+      "date": "Fri, 24 Jul 2026 09:00:00 +0800",
+      "body": "您好，上周贵司提交的 50 人企业版报价方案我们已经收到并内部讨论了。有几个问题想跟进确认：1. 报价中包含的实施服务具体包括哪些内容？2. 如果我们增加 20 个账号，价格怎么调整？3. 上次提到的数据迁移方案什么时候可以提供？我们希望本周内能确认最终方案，请尽快回复。",
+      "has_attachments": false
+    },
+    {
+      "uid": "203",
+      "message_id": "<quote-203@client-dingxin.com>",
+      "thread_id": "thread-quote-203",
+      "from": "刘总 <liuzong@dingxin-tech.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "subject": "采购100人企业版，请提供正式报价和合同",
+      "date": "Fri, 24 Jul 2026 09:15:00 +0800",
+      "body": "您好，经过前期评估，我们决定采购贵司智能客服产品，规模为 100 人企业版。请提供正式报价单和合同模板。我们关注以下几点：1. 100 人企业版年费和实施费明细；2. 是否可以申请年度签约折扣；3. 合同中需要包含 SLA 99.9% 可用性保障条款；4. 付款方式希望支持分期。如方便，本周内安排合同评审。",
+      "has_attachments": false
+    },
+    {
+      "uid": "204",
+      "message_id": "<complaint-204@client-dingxin.com>",
+      "thread_id": "thread-complaint-204",
+      "from": "刘总 <liuzong@dingxin-tech.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "cc": "孙磊 <sunlei@jingchuang-saas.com>",
+      "subject": "投诉：系统多次宕机，要求立即处理并赔偿",
+      "date": "Fri, 24 Jul 2026 10:30:00 +0800",
+      "body": "您好，我是鼎信科技的刘总。过去一周你们的系统已经宕机 3 次，每次超过 20 分钟，导致我们的客服中心完全瘫痪，客户投诉激增。这严重违反了合同中的 SLA 保障条款。我要求：1. 立即给出根因分析；2. 48 小时内提交整改方案；3. 对本次事故进行赔偿。如果我们的问题不能在 48 小时内得到解决，我们将考虑终止合同并采取法律手段。请立即回复。",
+      "has_attachments": false
+    },
+    {
+      "uid": "205",
+      "message_id": "<urging-205@client-huarun.com>",
+      "thread_id": "thread-urging-205",
+      "from": "郑洁 <zhengjie@huarun-realestate.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "subject": "紧急：数据迁移方案已经等了两周，请尽快回复",
+      "date": "Fri, 24 Jul 2026 11:00:00 +0800",
+      "body": "您好，两周前我就提出需要数据迁移方案，到现在还没有收到。我们领导已经在催我了，如果这周还拿不到方案，我们可能要考虑其他供应商了。请今天内回复一个明确的时间节点，不要再拖了。",
+      "has_attachments": false
+    },
+    {
+      "uid": "206",
+      "message_id": "<refund-206@client-yongda.com>",
+      "thread_id": "thread-refund-206",
+      "from": "何伟 <hewei@yongda-logistics.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "subject": "申请退款：项目暂停，要求退还剩余服务费",
+      "date": "Fri, 24 Jul 2026 11:30:00 +0800",
+      "body": "您好，由于公司业务调整，我们决定暂停智能客服项目。我们购买的是一年期服务，目前只使用了 3 个月，希望申请退还剩余 9 个月的服务费用。请提供退款流程和预计到账时间。合同中关于退款的条款我们想再确认一下，因为当时签约时销售说可以随时退款。",
+      "has_attachments": false
+    },
+    {
+      "uid": "207",
+      "message_id": "<other-207@client-zhongxin.com>",
+      "thread_id": "thread-other-207",
+      "from": "唐颖 <tangying@zhongxin-consulting.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "subject": "关于产品集成合作的探讨",
+      "body": "您好，我们是中信咨询，主要为企业提供数字化转型咨询服务。我们注意到贵司的智能客服产品在行业内口碑不错，想探讨一下是否有集成合作的可能性——比如我们将贵司产品纳入我们的推荐方案库，为客户提供一站式数字化工具包。如果您有兴趣，可以约个时间聊聊。",
+      "has_attachments": false
+    },
+    {
+      "uid": "208",
+      "message_id": "<inquiry-208@client-changhe.com>",
+      "thread_id": "thread-inquiry-208",
+      "from": "宋明 <songming@changhe-mfg.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "subject": "制造业场景是否适用？需要了解产品规格",
+      "body": "您好，我们是长河制造，一家传统制造企业，有 500+ 一线工人。目前厂内的沟通还靠对讲机和公告栏，效率很低。想了解贵司产品是否适用于制造业场景？是否支持工单流转和班组长分配？能否发一份产品规格书和制造业案例？谢谢。",
+      "has_attachments": false
+    },
+    {
+      "uid": "209",
+      "message_id": "<followup-209@client-jinmao.com>",
+      "thread_id": "thread-quote-102",
+      "from": "马骏 <majun@jinmao-group.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "subject": "Re: 跟进：上周提交的报价方案是否有更新",
+      "body": "补充一下，我们领导希望本周五（7月25日）前拿到最终方案，否则可能要推迟到下季度再议。请务必加快进度。另外，如果价格有调整空间，请一并告知，方便我们内部审批。",
+      "has_attachments": false
+    },
+    {
+      "uid": "210",
+      "message_id": "<complaint-210@client-huarun.com>",
+      "thread_id": "thread-urging-205",
+      "from": "郑洁 <zhengjie@huarun-realestate.com>",
+      "to": "销售团队 <sales@jingchuang-saas.com>",
+      "cc": "赵强 <zhaoqiang@jingchuang-saas.com>",
+      "subject": "Re: 紧急：数据迁移方案已经等了两周，请尽快回复",
+      "body": "我已经等了一上午了，到现在还没有收到任何回复。这个问题已经很严重了，我们总监今天下午要向集团汇报数字化进展，如果拿不到迁移方案，我只能如实说明贵司响应不及时。请立刻回复。",
+      "has_attachments": false
+    }
+  ]
+}

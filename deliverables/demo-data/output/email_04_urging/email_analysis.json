@@ -1,0 +1,12 @@
+{
+  "sourceType": "email",
+  "messageId": "<urging-205@client-huarun.com>",
+  "threadId": "thread-urging-205",
+  "from": "郑洁 <zhengjie@huarun-realestate.com>",
+  "subject": "紧急：数据迁移方案已经等了两周，请尽快回复",
+  "intent": "urging",
+  "riskLevel": "high",
+  "recommendedAction": "高风险：仅生成草稿，强制人工确认后再发送",
+  "draftReply": "郑洁，您好！\n\n感谢您的耐心等待。关于您催促的事项，当前进展如下：\n- [待补充具体进展]\n\n预计完成时间：[待补充]\n如有变化，我们会第一时间同步。\n\n感谢您的理解。\n\n此致\n销售团队\n[待补充发件人签名]",
+  "requiresHumanConfirmation": true
+}

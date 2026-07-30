@@ -1,0 +1,12 @@
+{
+  "sourceType": "email",
+  "messageId": "<followup-202@client-jinmao.com>",
+  "threadId": "thread-quote-102",
+  "from": "马骏 <majun@jinmao-group.com>",
+  "subject": "跟进：上周提交的报价方案是否有更新",
+  "intent": "followup",
+  "riskLevel": "high",
+  "recommendedAction": "高风险：仅生成草稿，强制人工确认后再发送",
+  "draftReply": "马骏，您好！\n\n感谢您的关注。以下是当前进度同步：\n- [待补充具体进度]\n\n如您方便，我们可以安排一个简短沟通以同步细节。\n\n期待您的回复。\n\n此致\n销售团队\n[待补充发件人签名]",
+  "requiresHumanConfirmation": true
+}

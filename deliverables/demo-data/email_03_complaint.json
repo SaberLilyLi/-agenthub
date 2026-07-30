@@ -1,0 +1,10 @@
+{
+  "uid": "204",
+  "message_id": "<complaint-204@client-dingxin.com>",
+  "thread_id": "thread-complaint-204",
+  "from": "刘总 <liuzong@dingxin-tech.com>",
+  "to": "销售团队 <sales@jingchuang-saas.com>",
+  "cc": "孙磊 <sunlei@jingchuang-saas.com>",
+  "subject": "投诉：系统多次宕机，要求立即处理并赔偿",
+  "body": "您好，我是鼎信科技的刘总。过去一周你们的系统已经宕机 3 次，每次超过 20 分钟，导致我们的客服中心完全瘫痪，客户投诉激增。这严重违反了合同中的 SLA 保障条款。我要求：1. 立即给出根因分析；2. 48 小时内提交整改方案；3. 对本次事故进行赔偿。如果我们的问题不能在 48 小时内得到解决，我们将考虑终止合同并采取法律手段。请立即回复。"
+}

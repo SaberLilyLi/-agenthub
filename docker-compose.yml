@@ -1,0 +1,35 @@
+services:
+  app:
+    build: .
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URI: ${DATABASE_URI:?DATABASE_URI must be set in .env or deployment secrets}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:?NEXT_PUBLIC_SERVER_URL must be set}
+      PAYLOAD_SECRET_FILE: /run/secrets/payload_secret
+    ports:
+      - '${APP_PORT:-3102}:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - agenthub_media:/app/media
+      - ./secrets/payload_secret:/run/secrets/payload_secret:ro
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: agenthub
+      POSTGRES_USER: agenthub
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env or deployment secrets}
+    ports:
+      - '${POSTGRES_PORT:-55432}:5432'
+    volumes:
+      - agenthub_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U agenthub -d agenthub']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  agenthub_postgres:
+  agenthub_media:

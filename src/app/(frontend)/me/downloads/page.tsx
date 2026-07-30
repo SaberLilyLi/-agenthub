@@ -1,0 +1,6 @@
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { payloadForHeaders } from '@/lib/auth'
+import { EmptyState } from '@/components/common/EmptyState'
+import { DownloadButton } from '@/components/agent/DownloadButton'
+export default async function Downloads(){const {payload,user}=await payloadForHeaders(await headers());if(!user||user.collection!=='users')redirect('/login?next=/me/downloads');const result=await payload.find({collection:'download-records',where:{user:{equals:user.id}},depth:1,sort:'-createdAt',overrideAccess:false});return <><h1 className="mb-8 text-3xl font-bold">下载记录</h1>{result.docs.length?<div className="divide-y rounded-[var(--radius)] border border-[var(--border)] bg-white">{result.docs.map(record=>{const agent=typeof record.agent==='number'?null:record.agent;const version=typeof record.version==='number'?null:record.version;return <div key={record.id} className="flex items-center justify-between p-5"><div><p className="font-medium">{agent?.name||'Agent'}</p><p className="text-sm text-slate-500">{version?.version||'历史版本'} · {record.createdAt}</p></div>{version&&<DownloadButton versionId={version.id}/>}</div>})}</div>:<EmptyState title="暂无下载记录" description="下载 Agent 后，记录会显示在这里。"/>}</>}

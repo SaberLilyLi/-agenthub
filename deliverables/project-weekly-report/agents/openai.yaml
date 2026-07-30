@@ -1,0 +1,4 @@
+interface:
+  display_name: "项目周报助手"
+  short_description: "将项目进展整理为重点清晰、可直接发送的周报内容。"
+  default_prompt: "使用 $project-weekly-report 根据以下工作记录生成项目周报。"

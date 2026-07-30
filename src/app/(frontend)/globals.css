@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+:root { --background:#f7f9fc; --foreground:#111827; --surface:#fff; --surface-muted:#f1f5f9; --border:#e5e7eb; --brand:#176bff; --brand-hover:#0f56d9; --brand-soft:#eaf2ff; --success:#16a34a; --warning:#d97706; --danger:#dc2626; --radius:0.75rem; --shadow:0 10px 30px rgb(15 23 42 / .06); }
+* { box-sizing:border-box } body { margin:0; background:var(--background); color:var(--foreground); font-family:Arial,"Microsoft YaHei",sans-serif } a { color:inherit; text-decoration:none }

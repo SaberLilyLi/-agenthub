@@ -1,0 +1,12 @@
+{
+  "sourceType": "email",
+  "messageId": "<other-207@client-zhongxin.com>",
+  "threadId": "thread-other-207",
+  "from": "唐颖 <tangying@zhongxin-consulting.com>",
+  "subject": "关于产品集成合作的探讨",
+  "intent": "inquiry",
+  "riskLevel": "low",
+  "recommendedAction": "客户询盘：生成产品介绍与联系方式回复草稿",
+  "draftReply": "唐颖，您好！\n\n感谢您的咨询。我们已在处理您的需求，将尽快为您提供详细信息。\n\n如需进一步了解，请随时联系我们：\n- 客服热线：[待补充]\n- 产品手册：[待补充链接]\n\n期待与您的合作。\n\n此致\n销售团队\n[待补充发件人签名]",
+  "requiresHumanConfirmation": true
+}

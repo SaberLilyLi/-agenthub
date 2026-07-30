@@ -1,0 +1,4 @@
+interface:
+  display_name: "商家数据问答助手"
+  short_description: "本机跨 Sheet 查询服装批发数据和经营资料并给出可核验结论"
+  default_prompt: "使用 $merchant-data-knowledge-qa 分析我本机上传的服装批发 Excel，并给出有依据的数据结论。"

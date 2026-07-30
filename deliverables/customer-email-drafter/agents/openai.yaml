@@ -1,0 +1,4 @@
+interface:
+  display_name: "客户邮件自动收发助手"
+  short_description: "通过现有或自建邮箱连接器搜索、起草并安全处理客户邮件。"
+  default_prompt: "使用 $customer-email-drafter 和当前已授权邮箱连接器搜索并处理客户邮件。"

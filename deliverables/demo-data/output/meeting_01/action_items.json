@@ -1,0 +1,198 @@
+{
+  "metadata": {
+    "title": "智能客服V2.0发布评审会",
+    "meetingAt": "2026-07-24 14:00",
+    "attendees": [
+      "张伟",
+      "李明",
+      "王倩",
+      "陈晨",
+      "赵强",
+      "刘洋"
+    ],
+    "sourceReference": "meeting-001",
+    "itemCount": 15
+  },
+  "actionItems": [
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "智能客服 V2.0 产品发布评审会",
+      "description": "类型：行动项",
+      "ownerName": "待指定",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "low",
+      "requiresConfirmation": true,
+      "evidence": "智能客服 V2.0 产品发布评审会"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "张伟（产品总监）、李明（技术负责人）、王倩（设计负责人）、陈晨（市场经理）、赵强（客户成功经理）、刘洋（测试负责人）",
+      "description": "类型：行动项",
+      "ownerName": "张伟",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "low",
+      "requiresConfirmation": true,
+      "evidence": "张伟（产品总监）、李明（技术负责人）、王倩（设计负责人）、陈晨（市场经理）、赵强（客户成功经理）、刘洋（测试负责人）"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "今天的主要目标是确认 V2.0 发布计划。上周技术侧完成核心模块联调，本周需要确定发布时间窗口。请大家同步各自模块的进度",
+      "description": "类型：决策",
+      "ownerName": "待指定",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "low",
+      "requiresConfirmation": true,
+      "evidence": "今天的主要目标是确认 V2.0 发布计划。上周技术侧完成核心模块联调，本周需要确定发布时间窗口。请大家同步各自模块的进度。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "后端 API 已全部完成，本周完成压力测试。前端还有 2 个页面待联调，预计 2026-07-28 前提交评审。压力测试由刘洋负责，7月30日前输出报告",
+      "description": "类型：行动项",
+      "ownerName": "刘洋",
+      "dueAt": "2026-07-28",
+      "status": "draft",
+      "riskLevel": "low",
+      "requiresConfirmation": true,
+      "evidence": "后端 API 已全部完成，本周完成压力测试。前端还有 2 个页面待联调，预计 2026-07-28 前提交评审。压力测试由刘洋负责，7月30日前输出报告。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "设计稿已经全部交付，但发现 V2.0 新增的「智能路由」页面交互流程需要和产品再确认。风险点在于：如果路由规则引擎延迟上线，前端需要做降级方案，这块不确定",
+      "description": "类型：决策",
+      "ownerName": "待指定",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "medium",
+      "requiresConfirmation": true,
+      "evidence": "设计稿已经全部交付，但发现 V2.0 新增的「智能路由」页面交互流程需要和产品再确认。风险点在于：如果路由规则引擎延迟上线，前端需要做降级方案，这块不确定。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "决定：V2.0 发布时间定为 2026-08-05，不再延期。路由规则引擎如果来不及，先上线降级版本，V2.1 补齐。李明负责输出降级方案，7月28日前完成",
+      "description": "类型：决策",
+      "ownerName": "李明",
+      "dueAt": "2026-08-05",
+      "status": "draft",
+      "riskLevel": "low",
+      "requiresConfirmation": true,
+      "evidence": "决定：V2.0 发布时间定为 2026-08-05，不再延期。路由规则引擎如果来不及，先上线降级版本，V2.1 补齐。李明负责输出降级方案，7月28日前完成。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "市场侧已准备好发布物料，包括公众号推文、官网更新和客户邮件模板。物料需要法务审核，暂未提交。我负责本周内联系法务，确认审核时间。紧急的是客户邮件模板中有促销文案",
+      "description": "类型：风险/待确认",
+      "ownerName": "待指定（发言人自称）",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "high",
+      "requiresConfirmation": true,
+      "evidence": "市场侧已准备好发布物料，包括公众号推文、官网更新和客户邮件模板。物料需要法务审核，暂未提交。我负责本周内联系法务，确认审核时间。紧急的是客户邮件模板中有促销文案，涉及折扣承诺，需要法务确认后才能发。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "客户侧收到 3 家重点客户的升级意向，其中鼎信科技明确要求合同中写明 SLA 保障条款。这块涉及合同修改，需要法务介入。由赵强负责对接法务部，7月30日前确认合",
+      "description": "类型：风险/待确认",
+      "ownerName": "赵强",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "high",
+      "requiresConfirmation": true,
+      "evidence": "客户侧收到 3 家重点客户的升级意向，其中鼎信科技明确要求合同中写明 SLA 保障条款。这块涉及合同修改，需要法务介入。由赵强负责对接法务部，7月30日前确认合同条款是否可行。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "测试侧已完成功能测试，但性能测试发现大并发下响应时间超标。这个问题可能影响发布。需要李明团队协助排查。修复后重新测试，预计需要 2 天",
+      "description": "类型：风险/待确认",
+      "ownerName": "李明",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "medium",
+      "requiresConfirmation": true,
+      "evidence": "测试侧已完成功能测试，但性能测试发现大并发下响应时间超标。这个问题可能影响发布。需要李明团队协助排查。修复后重新测试，预计需要 2 天。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "确认通过：发布计划整体可行。待确认项：路由规则引擎降级方案的可行性、法务审核时间。风险：性能问题如果 2026-07-31 前未修复，发布需要推迟。李明负责跟进",
+      "description": "类型：决策",
+      "ownerName": "李明",
+      "dueAt": "2026-07-31",
+      "status": "draft",
+      "riskLevel": "high",
+      "requiresConfirmation": true,
+      "evidence": "确认通过：发布计划整体可行。待确认项：路由规则引擎降级方案的可行性、法务审核时间。风险：性能问题如果 2026-07-31 前未修复，发布需要推迟。李明负责跟进性能问题修复，刘洋负责修复后回归测试。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "补充一点，如果法务审核超过 3 个工作日，发布物料就来不及。这是一个阻塞项，需要张伟协调法务部优先处理",
+      "description": "类型：风险/待确认",
+      "ownerName": "张伟",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "high",
+      "requiresConfirmation": true,
+      "evidence": "补充一点，如果法务审核超过 3 个工作日，发布物料就来不及。这是一个阻塞项，需要张伟协调法务部优先处理。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "我来协调法务部，明天之前确认审核排期。另外，赵强，鼎信科技的合同条款如果法务不同意 SLA 保障，需要有备选方案，你提前准备一下",
+      "description": "类型：决策",
+      "ownerName": "待指定（发言人自称）",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "high",
+      "requiresConfirmation": true,
+      "evidence": "我来协调法务部，明天之前确认审核排期。另外，赵强，鼎信科技的合同条款如果法务不同意 SLA 保障，需要有备选方案，你提前准备一下。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "好的，我准备两套方案，一套含 SLA 保障，一套用响应时效替代。2026-07-29 前提交给法务",
+      "description": "类型：风险/待确认",
+      "ownerName": "待指定（发言人自称）",
+      "dueAt": "2026-07-29",
+      "status": "draft",
+      "riskLevel": "high",
+      "requiresConfirmation": true,
+      "evidence": "好的，我准备两套方案，一套含 SLA 保障，一套用响应时效替代。2026-07-29 前提交给法务。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "还有个问题：压力测试环境需要扩容，目前服务器资源不够。已经提交了扩容申请，但审批流程可能需要时间。不确定能否在 7月28日前完成扩容",
+      "description": "类型：决策",
+      "ownerName": "待指定",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "medium",
+      "requiresConfirmation": true,
+      "evidence": "还有个问题：压力测试环境需要扩容，目前服务器资源不够。已经提交了扩容申请，但审批流程可能需要时间。不确定能否在 7月28日前完成扩容。"
+    },
+    {
+      "sourceType": "meeting",
+      "sourceReference": "meeting-001",
+      "title": "这个我来跟运维协调，尽量加速审批。李明你同步把测试方案调整为可以在现有资源上先跑一轮，不要等扩容",
+      "description": "类型：行动项",
+      "ownerName": "待指定（发言人自称）",
+      "dueAt": null,
+      "status": "draft",
+      "riskLevel": "low",
+      "requiresConfirmation": true,
+      "evidence": "这个我来跟运维协调，尽量加速审批。李明你同步把测试方案调整为可以在现有资源上先跑一轮，不要等扩容。"
+    }
+  ]
+}

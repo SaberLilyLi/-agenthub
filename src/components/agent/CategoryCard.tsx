@@ -1,0 +1,3 @@
+import Link from 'next/link'
+import { FolderKanban } from 'lucide-react'
+export function CategoryCard({ category, count }: { category:{name:string;slug:string;description?:string|null};count:number }) { return <Link href={`/categories/${category.slug}`} className="rounded-[var(--radius)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow)] transition hover:border-[var(--brand)]"><FolderKanban className="size-5 text-[var(--brand)]"/><h3 className="mt-4 font-semibold">{category.name}</h3><p className="mt-2 line-clamp-2 text-sm text-slate-500">{category.description||'探索该分类下的官方 Agent。'}</p><p className="mt-4 text-sm text-[var(--brand)]">{count} 个 Agent</p></Link> }

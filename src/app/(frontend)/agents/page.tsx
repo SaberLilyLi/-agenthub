@@ -1,0 +1,8 @@
+import config from '@payload-config'
+import { getPayload, type Where } from 'payload'
+import { AgentGrid } from '@/components/agent/AgentGrid'
+import { EmptyState } from '@/components/common/EmptyState'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+type Search = { q?: string; sort?: 'latest'|'downloads'|'featured'; page?:string }
+export default async function Agents({searchParams}:{searchParams:Promise<Search>}){const query=await searchParams;const payload=await getPayload({config});const page=Math.max(1,Number(query.page)||1);const where:Where=query.q?{and:[{status:{equals:'published'}},{or:[{name:{contains:query.q}},{summary:{contains:query.q}}]}]}:{status:{equals:'published'}};const sort=query.sort==='downloads'?'-downloadCount':query.sort==='featured'?'-featured':'-publishedAt';const result=await payload.find({collection:'agents',where,limit:12,page,sort});return <><div className="mb-8"><p className="text-sm font-medium text-[var(--brand)]">官方 Agent 市场</p><h1 className="mt-2 text-3xl font-bold tracking-tight">发现适合你的智能体</h1></div><form className="mb-8 flex flex-col gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow)] sm:flex-row"><Input name="q" defaultValue={query.q} placeholder="搜索名称或使用场景"/><select name="sort" defaultValue={query.sort||'latest'} className="h-10 rounded-md border border-[var(--border)] bg-white px-3 text-sm"><option value="latest">最新发布</option><option value="downloads">最多下载</option><option value="featured">推荐优先</option></select><Button>搜索</Button></form>{result.docs.length?<AgentGrid agents={result.docs}/>:<EmptyState title="暂时还没有已发布的 Agent" description={query.q?'没有找到匹配的 Agent，请更换关键词。':'鲸创正在整理第一批实用智能体应用。'}/>}</>}

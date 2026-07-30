@@ -1,0 +1,12 @@
+{
+  "email": "sales@example.com",
+  "password": "env:MAIL_APP_PASSWORD",
+  "folder": "INBOX",
+  "imap": { "host": "imap.example.com", "port": 993 },
+  "smtp": { "host": "smtp.example.com", "port": 587, "starttls": true },
+  "display_from": "销售团队 <sales@example.com>",
+  "auto_send": false,
+  "allowed_recipient_domains": ["example-client.com"],
+  "audit_log": "./email-audit.jsonl",
+  "state_file": "./email-state.json"
+}
