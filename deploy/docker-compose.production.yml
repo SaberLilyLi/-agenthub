@@ -12,9 +12,13 @@ services:
       DATABASE_URI: postgresql://agenthub:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/agenthub
       NEXT_PUBLIC_SERVER_URL: https://${DOMAIN:?DOMAIN must be set in deploy/.env.production}
       PAYLOAD_SECRET_FILE: /run/secrets/payload_secret
+      CLAMAV_HOST: ${CLAMAV_HOST:-clamav}
+      CLAMAV_PORT: ${CLAMAV_PORT:-3310}
     depends_on:
       postgres:
         condition: service_healthy
+      clamav:
+        condition: service_started
     volumes:
       - agenthub_media:/app/media
       - ../secrets/payload_secret:/run/secrets/payload_secret:ro
@@ -58,6 +62,14 @@ services:
       retries: 12
     restart: unless-stopped
 
+  # Production upload security requires a running clamd service. The database
+  # volume retains downloaded virus definitions between container restarts.
+  clamav:
+    image: clamav/clamav:stable
+    volumes:
+      - clamav_data:/var/lib/clamav
+    restart: unless-stopped
+
   caddy:
     image: caddy:2-alpine
     environment:
@@ -78,3 +90,4 @@ volumes:
   agenthub_media:
   caddy_data:
   caddy_config:
+  clamav_data:

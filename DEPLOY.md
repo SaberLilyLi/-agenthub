@@ -26,7 +26,7 @@ openssl rand -base64 48 > secrets/payload_secret
 chmod 600 deploy/.env.production secrets/payload_secret
 ```
 
-编辑 `deploy/.env.production`：至少替换 `DOMAIN`、`POSTGRES_PASSWORD`、`AUDIT_IP_HASH_SECRET`、COS 配置、Turnstile 配置和 `DOWNLOAD_ALLOWED_HOSTS`。
+编辑 `deploy/.env.production`：至少替换 `DOMAIN`、`POSTGRES_PASSWORD`、`AUDIT_IP_HASH_SECRET`、COS 配置、Turnstile 配置和 `DOWNLOAD_ALLOWED_HOSTS`。生产 Compose 默认启动内部 ClamAV；保留 `CLAMAV_HOST=clamav` 和 `CLAMAV_PORT=3310` 即可。首次启动 ClamAV 会下载病毒库，上传功能会在病毒库就绪后可用。
 
 先构建并应用数据库迁移：
 
