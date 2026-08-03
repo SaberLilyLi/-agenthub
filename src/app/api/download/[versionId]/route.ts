@@ -2,6 +2,7 @@ import { sql, type PostgresAdapter } from '@payloadcms/db-postgres'
 
 import { payloadForRequest } from '@/lib/auth'
 import { downloadAuditMetadata } from '@/lib/downloadAudit'
+import { isLocalSkillSubmissionUrl } from '@/lib/skillSubmission'
 
 export async function POST(request: Request, { params }: { params: Promise<{ versionId: string }> }) {
   const { versionId } = await params
@@ -11,7 +12,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ ver
   let url: URL
   try { url = new URL(version.downloadUrl) } catch { return new Response('下载地址无效', { status: 400 }) }
   const allowed = (process.env.DOWNLOAD_ALLOWED_HOSTS || '').split(',').map(value => value.trim()).filter(Boolean)
-  if (url.protocol !== 'https:' || !allowed.includes(url.host)) return new Response('下载地址不在允许白名单中', { status: 403 })
+  const allowedExternalURL = url.protocol === 'https:' && allowed.includes(url.host)
+  if (!isLocalSkillSubmissionUrl(url) && !allowedExternalURL) return new Response('下载地址不在允许白名单中', { status: 403 })
   const agentId = typeof version.agent === 'number' ? version.agent : version.agent.id
   const agent = await payload.findByID({ collection: 'agents', id: agentId, overrideAccess: true })
   if (agent.status !== 'published') return new Response('当前 Agent 未发布，无法下载', { status: 404 })

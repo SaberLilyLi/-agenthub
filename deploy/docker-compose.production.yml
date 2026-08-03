@@ -21,6 +21,7 @@ services:
         condition: service_started
     volumes:
       - agenthub_media:/app/media
+      - agenthub_skill_submissions:/app/skill-submissions
       - ../secrets/payload_secret:/run/secrets/payload_secret:ro
     restart: unless-stopped
 
@@ -88,6 +89,7 @@ services:
 volumes:
   agenthub_postgres:
   agenthub_media:
+  agenthub_skill_submissions:
   caddy_data:
   caddy_config:
   clamav_data:

@@ -1,9 +1,48 @@
-import type { CollectionConfig } from 'payload'
+import type { Access, CollectionBeforeChangeHook, CollectionConfig, Where } from 'payload'
 
-import { hasContentAdminRole, isContentAdmin } from '../access/isAdmin'
+import { hasContentAdminRole, hasReviewerRole } from '../access/isAdmin'
+import { isActivePlatformUser } from '../access/isActivePlatformUser'
 
-const published = ({ req }: { req: { user?: unknown } }) =>
-  hasContentAdminRole(req.user) ? true : { status: { equals: 'published' } }
+const readAgents: Access = ({ req }) => {
+  if (hasContentAdminRole(req.user) || hasReviewerRole(req.user)) return true
+  if (isActivePlatformUser(req.user)) {
+    const visible: Where = { or: [{ status: { equals: 'published' } }, { owner: { equals: req.user.id } }] }
+    return visible
+  }
+  return { status: { equals: 'published' } }
+}
+
+const createAgent: Access = ({ req }) => isActivePlatformUser(req.user)
+
+const updateAgent: Access = ({ req }) => {
+  if (hasContentAdminRole(req.user)) return true
+  if (!isActivePlatformUser(req.user)) return false
+  const ownDraft: Where = { and: [{ owner: { equals: req.user.id } }, { status: { equals: 'draft' } }] }
+  return ownDraft
+}
+
+const deleteAgent: Access = ({ req }) => {
+  if (hasContentAdminRole(req.user)) return true
+  if (!isActivePlatformUser(req.user)) return false
+  const ownDraft: Where = { and: [{ owner: { equals: req.user.id } }, { status: { equals: 'draft' } }] }
+  return ownDraft
+}
+
+const protectContributorFields: CollectionBeforeChangeHook = ({ data, operation, req }) => {
+  if (req.context.skillReviewPublication === true) return data
+  if (hasContentAdminRole(req.user)) return data
+  if (!isActivePlatformUser(req.user)) return data
+
+  if (operation === 'create') data.owner = req.user.id
+  data.featured = false
+  data.status = 'draft'
+  data.publishedAt = null
+  if (operation === 'create') data.downloadCount = 0
+  return data
+}
+
+const contentAdminOnly = ({ req }: { req: { user?: unknown } }) => hasContentAdminRole(req.user)
+const showToContentAdmin = (_data: unknown, _siblingData: unknown, { user }: { user?: unknown }) => hasContentAdminRole(user)
 
 export const Agents: CollectionConfig = {
   slug: 'agents',
@@ -12,18 +51,55 @@ export const Agents: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'slug', 'status', 'featured', 'publishedAt', 'downloadCount'],
   },
-  access: { read: published, create: isContentAdmin, update: isContentAdmin, delete: isContentAdmin },
+  access: {
+    admin: ({ req }) => isActivePlatformUser(req.user),
+    read: readAgents,
+    create: createAgent,
+    update: updateAgent,
+    delete: deleteAgent,
+  },
+  hooks: { beforeChange: [protectContributorFields] },
   fields: [
+    {
+      name: 'owner',
+      label: '创建用户',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: { position: 'sidebar', readOnly: true, condition: showToContentAdmin },
+      access: { create: () => false, update: () => false },
+    },
     { name: 'name', label: '名称', type: 'text', required: true },
     { name: 'slug', label: '标识', type: 'text', required: true, unique: true },
     { name: 'summary', label: '简介', type: 'textarea', required: true, maxLength: 180 },
     { name: 'description', label: '详细介绍', type: 'textarea' },
     { name: 'category', label: '分类', type: 'relationship', relationTo: 'categories', required: true },
     { name: 'tags', label: '标签', type: 'array', fields: [{ name: 'tag', label: '标签', type: 'text' }] },
-    { name: 'cover', label: '封面图', type: 'upload', relationTo: 'media' },
-    { name: 'screenshots', label: '截图', type: 'upload', relationTo: 'media', hasMany: true },
+    {
+      name: 'cover',
+      label: '封面图',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { condition: showToContentAdmin },
+      access: { create: contentAdminOnly, update: contentAdminOnly },
+    },
+    {
+      name: 'screenshots',
+      label: '截图',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      admin: { condition: showToContentAdmin },
+      access: { create: contentAdminOnly, update: contentAdminOnly },
+    },
     { name: 'demoUrl', label: '演示地址', type: 'text' },
-    { name: 'featured', label: '推荐展示', type: 'checkbox', defaultValue: false, admin: { position: 'sidebar' } },
+    {
+      name: 'featured',
+      label: '推荐展示',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { position: 'sidebar', condition: showToContentAdmin },
+      access: { create: contentAdminOnly, update: contentAdminOnly },
+    },
     {
       name: 'status',
       label: '状态',
@@ -34,9 +110,32 @@ export const Agents: CollectionConfig = {
         { label: '已发布', value: 'published' },
         { label: '已归档', value: 'archived' },
       ],
-      admin: { position: 'sidebar' },
+      admin: { position: 'sidebar', condition: showToContentAdmin },
+      access: { create: contentAdminOnly, update: contentAdminOnly },
     },
-    { name: 'publishedAt', label: '发布时间', type: 'date', admin: { position: 'sidebar' } },
-    { name: 'downloadCount', label: '下载次数', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+    {
+      name: 'publishedAt',
+      label: '发布时间',
+      type: 'date',
+      admin: { position: 'sidebar', condition: showToContentAdmin },
+      access: { create: contentAdminOnly, update: contentAdminOnly },
+    },
+    {
+      name: 'packageUpload',
+      label: 'Skill 文件投稿',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '@/components/admin/AgentPackageUpload#AgentPackageUpload' },
+      },
+    },
+    {
+      name: 'downloadCount',
+      label: '下载次数',
+      type: 'number',
+      defaultValue: 0,
+      admin: { readOnly: true, condition: showToContentAdmin },
+      access: { create: contentAdminOnly, update: contentAdminOnly },
+    },
   ],
 }

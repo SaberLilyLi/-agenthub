@@ -1,7 +1,4 @@
 import path from 'path'
-import { randomUUID } from 'crypto'
-
-import { cosClient, cosConfig, cosPublicUrl } from './cos'
 
 export const skillFileTypes = {
   '.rar': 'application/vnd.rar',
@@ -13,29 +10,30 @@ export function skillFileExtension(filename: string) {
   return extension in skillFileTypes ? (extension as keyof typeof skillFileTypes) : null
 }
 
-export function assertCosDownloadHost(downloadUrl: string) {
-  const allowedHosts = (process.env.DOWNLOAD_ALLOWED_HOSTS || '').split(',').map(value => value.trim()).filter(Boolean)
-  if (!allowedHosts.includes(new URL(downloadUrl).host)) throw new Error('COS 下载域名未配置到 DOWNLOAD_ALLOWED_HOSTS 白名单')
+/** Builds a same-origin absolute URL for a file served by Payload local storage. */
+export function localSkillSubmissionUrl(pathname?: null | string) {
+  if (!pathname) throw new Error('本地投稿文件缺失，无法发布')
+
+  const configured = process.env.NEXT_PUBLIC_SERVER_URL?.trim()
+  if (!configured) throw new Error('NEXT_PUBLIC_SERVER_URL 未配置，无法生成本地下载地址')
+
+  const serverURL = new URL(configured)
+  const fileURL = new URL(pathname, serverURL)
+  if (!['http:', 'https:'].includes(serverURL.protocol) || fileURL.origin !== serverURL.origin) {
+    throw new Error('本地投稿文件地址无效')
+  }
+
+  return fileURL.toString()
 }
 
-/** Stores a reviewed submission in COS immediately; no local file is retained. */
-export async function uploadSubmissionToCos(input: { data: Buffer; filename: string; slug: string; version: string }) {
-  const extension = skillFileExtension(input.filename)
-  if (!extension) throw new Error('仅支持 ZIP 或 RAR 压缩包')
-  const key = `skills/submissions/${randomUUID()}/${input.slug}-v${input.version}${extension}`
-  const downloadUrl = cosPublicUrl(key)
-  assertCosDownloadHost(downloadUrl)
-  await new Promise<void>((resolve, reject) => cosClient().putObject(
-    { ...cosConfig(), Key: key, Body: input.data, ContentType: skillFileTypes[extension] },
-    error => error ? reject(error) : resolve(),
-  ))
-  return { key, fileSize: input.data.length }
-}
+export function isLocalSkillSubmissionUrl(value: URL) {
+  const configured = process.env.NEXT_PUBLIC_SERVER_URL?.trim()
+  if (!configured) return false
 
-export async function deleteSubmissionFromCos(key?: string | null) {
-  if (!key) return
-  await new Promise<void>((resolve, reject) => cosClient().deleteObject(
-    { ...cosConfig(), Key: key },
-    error => error ? reject(error) : resolve(),
-  ))
+  try {
+    const serverURL = new URL(configured)
+    return value.origin === serverURL.origin && value.pathname.startsWith('/api/skill-submissions/file/')
+  } catch {
+    return false
+  }
 }

@@ -35,11 +35,11 @@ export const Users: CollectionConfig = {
     }],
     afterChange: [revokeSkillSubmissionPermissionOnDisable],
   },
-  admin: { useAsTitle: 'name' },
+  admin: { useAsTitle: 'name', hidden: ({ user }) => !hasAdminRole(user) },
   access: {
     // Accounts are provisioned by user operators in the admin UI only.
     create: isUserAdmin,
-    admin: ({ req }) => hasAdminRole(req.user),
+    admin: ({ req }) => isActivePlatformUser(req.user),
     read: ({ req }) => (isUserAdmin({ req }) ? true : isActivePlatformUser(req.user) ? { id: { equals: req.user.id } } : false),
     update: ({ req }) => (isUserAdmin({ req }) ? true : isActivePlatformUser(req.user) ? { id: { equals: req.user.id } } : false),
     delete: isSuperAdmin,

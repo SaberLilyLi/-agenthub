@@ -1,6 +1,7 @@
 import type { Access, CollectionConfig, Where } from 'payload'
 
-import { hasContentAdminRole, isContentAdmin } from '../access/isAdmin'
+import { hasAdminRole, isContentAdmin } from '../access/isAdmin'
+import { isActivePlatformUser } from '../access/isActivePlatformUser'
 
 export const publicVersionWhere = (agentIds: number[]): Where | false => {
   if (!agentIds.length) return false
@@ -14,19 +15,31 @@ export const publicVersionWhere = (agentIds: number[]): Where | false => {
 }
 
 const readPublishedVersions: Access = async ({ req }) => {
-  if (hasContentAdminRole(req.user)) return true
+  if (hasAdminRole(req.user)) return true
 
-  // A published version is public only while its parent Agent is published.
-  // This prevents a mistakenly published version from exposing draft metadata.
   const publishedAgents = await req.payload.find({
     collection: 'agents',
     where: { status: { equals: 'published' } },
     depth: 0,
     pagination: false,
-    overrideAccess: false,
+    overrideAccess: true,
   })
+  const published = publicVersionWhere(publishedAgents.docs.map((agent) => agent.id))
 
-  return publicVersionWhere(publishedAgents.docs.map((agent) => agent.id))
+  if (!isActivePlatformUser(req.user)) return published
+
+  const ownedAgents = await req.payload.find({
+    collection: 'agents',
+    where: { owner: { equals: req.user.id } },
+    depth: 0,
+    pagination: false,
+    overrideAccess: true,
+  })
+  const ownedAgentIds = ownedAgents.docs.map((agent) => agent.id)
+  if (!ownedAgentIds.length) return published || { id: { equals: -1 } }
+  if (!published) return { agent: { in: ownedAgentIds } }
+
+  return { or: [published, { agent: { in: ownedAgentIds } }] }
 }
 
 export const AgentVersions: CollectionConfig = {
@@ -35,6 +48,7 @@ export const AgentVersions: CollectionConfig = {
   labels: { singular: '智能体版本', plural: '智能体版本' },
   admin: { useAsTitle: 'version', defaultColumns: ['agent', 'version', 'channel', 'status', 'publishedAt'] },
   access: {
+    admin: ({ req }) => isActivePlatformUser(req.user),
     read: readPublishedVersions,
     create: isContentAdmin,
     update: isContentAdmin,
@@ -42,10 +56,11 @@ export const AgentVersions: CollectionConfig = {
   },
   fields: [
     { name: 'agent', label: '智能体', type: 'relationship', relationTo: 'agents', required: true },
+    { name: 'package', label: '本地 Skill 文件', type: 'relationship', relationTo: 'skill-submissions', admin: { readOnly: true } },
     { name: 'version', label: '版本号', type: 'text', required: true },
     { name: 'fileSize', label: '文件大小', type: 'text' },
     { name: 'changelog', label: '更新说明', type: 'textarea' },
-    { name: 'downloadUrl', label: 'COS 下载地址', type: 'text' },
+    { name: 'downloadUrl', label: '下载地址', type: 'text' },
     {
       name: 'channel',
       label: '发布通道',

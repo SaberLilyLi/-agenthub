@@ -19,7 +19,7 @@ let lastRateLimitPrune = 0
 const userRoutes = ['/me', '/api/account', '/api/favorites', '/api/skills']
 const adminRoutes = ['/admin', '/api/admin']
 const csrfRoutes = ['/api/auth', '/api/account', '/api/favorites', '/api/skills', '/api/admin', '/api/download']
-const uploadRoutes = ['/api/skills/submit', '/api/admin/cos/upload']
+const uploadRoutes = ['/api/skills/submit', '/api/admin/skills/upload', '/api/admin/cos/upload']
 
 type AbuseRule = { bucket: string; limit: number; windowMs: number; humanVerification: boolean }
 
@@ -28,7 +28,8 @@ const abuseRules: Record<string, AbuseRule> = {
   '/api/users/login': { bucket: 'payload-login', limit: 5, windowMs: 15 * 60_000, humanVerification: true },
   '/api/skills/request-upload-permission': { bucket: 'skill-permission-request', limit: 5, windowMs: 60 * 60_000, humanVerification: true },
   '/api/skills/submit': { bucket: 'skill-submit', limit: 3, windowMs: 60 * 60_000, humanVerification: true },
-  '/api/admin/cos/upload': { bucket: 'admin-upload', limit: 10, windowMs: 60 * 60_000, humanVerification: true },
+  '/api/admin/skills/upload': { bucket: 'admin-skill-upload', limit: 10, windowMs: 60 * 60_000, humanVerification: true },
+  '/api/admin/cos/upload': { bucket: 'admin-skill-upload-legacy', limit: 10, windowMs: 60 * 60_000, humanVerification: true },
 }
 
 const pathMatches = (pathname: string, base: string) => pathname === base || pathname.startsWith(`${base}/`)
@@ -188,17 +189,12 @@ export async function proxy(request: NextRequest) {
   const isUserRoute = userRoutes.some((route) => pathMatches(pathname, route))
 
   // Let Payload render its own login UI. Every other admin route requires a
-  // valid administrator session before the request reaches the admin app.
+  // valid active platform session; collection access limits ordinary users.
   if (pathname === '/admin/login') return withCsrfCookie(request, NextResponse.next())
 
   if (isAdminRoute) {
     const session = await sessionFromCookie(request, adminCookie)
     if (!session || session.collection !== 'users') return unauthenticated(request)
-    if (!['admin', 'superadmin', 'system_admin', 'content_admin', 'reviewer', 'user_admin'].includes(String(session.role))) {
-      return pathMatches(pathname, '/api')
-        ? NextResponse.json({ message: '需要管理员权限' }, { status: 403 })
-        : NextResponse.redirect(new URL('/', request.url))
-    }
     return withCsrfCookie(request, NextResponse.next())
   }
 

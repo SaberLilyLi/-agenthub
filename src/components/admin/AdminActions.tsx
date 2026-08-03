@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@payloadcms/ui'
+import Link from 'next/link'
 import { csrfHeaders } from '@/lib/client/csrf'
 
 const buttonStyle = {
@@ -19,7 +21,10 @@ const buttonStyle = {
 } as const
 
 export function AdminActions() {
+  const { user } = useAuth()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const role = typeof user === 'object' && user ? String(user.role || '') : ''
+  const canReview = ['admin', 'superadmin', 'system_admin', 'reviewer'].includes(role)
 
   async function logout() {
     setIsLoggingOut(true)
@@ -32,9 +37,8 @@ export function AdminActions() {
 
   return (
     <div style={{ alignItems: 'center', display: 'flex', gap: '8px' }}>
-      <a href="/admin/collections/skill-upload-requests" style={buttonStyle}>权限申请</a>
-      <a href="/admin/collections/skill-submissions" style={buttonStyle}>Skill 审核</a>
-      <a href="/agents" style={buttonStyle}>Agent 广场</a>
+      {canReview && <Link href="/admin/collections/skill-submissions" style={buttonStyle}>Skill 审核</Link>}
+      <Link href="/agents" style={buttonStyle}>Agent 广场</Link>
       <button type="button" style={{ ...buttonStyle, cursor: isLoggingOut ? 'wait' : 'pointer' }} disabled={isLoggingOut} onClick={logout}>
         {isLoggingOut ? '退出中…' : '退出登录'}
       </button>

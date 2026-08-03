@@ -1,12 +1,14 @@
 import type { CollectionConfig } from 'payload'
 
-import { isSystemAdmin } from '../access/isAdmin'
+import { hasSystemAdminRole, isSystemAdmin } from '../access/isAdmin'
 import { isActivePlatformUser } from '../access/isActivePlatformUser'
 
 export const DownloadRecords: CollectionConfig = {
   slug: 'download-records',
   labels: { singular: '下载记录', plural: '下载记录' },
+  admin: { hidden: ({ user }) => !hasSystemAdminRole(user) },
   access: {
+    admin: ({ req }) => hasSystemAdminRole(req.user),
     create: () => false,
     read: ({ req }) => isSystemAdmin({ req }) ? true : isActivePlatformUser(req.user) ? { user: { equals: req.user.id } } : false,
     update: () => false,

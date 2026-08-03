@@ -1,10 +1,11 @@
 import type { GlobalConfig } from 'payload'
 
-import { isSystemAdmin } from '../access/isAdmin'
+import { hasSystemAdminRole, isSystemAdmin } from '../access/isAdmin'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: '网站设置',
+  admin: { hidden: ({ user }) => !hasSystemAdminRole(user) },
   access: { read: () => true, update: isSystemAdmin },
   fields: [
     { name: 'siteName', label: '网站名称', type: 'text', defaultValue: '鲸创 AgentHub' },

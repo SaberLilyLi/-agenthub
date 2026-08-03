@@ -17,11 +17,10 @@ export const metadata: Metadata = {
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const { user } = await payloadForHeaders(await headers())
   const currentUser = user?.collection === 'users' ? user : null
-  const canManageAgents = currentUser && ['admin', 'superadmin'].includes(currentUser.role ?? '')
 
   return (
     <html lang="zh-CN">
-      <body>
+      <body className={currentUser?.role === 'superadmin' ? undefined : 'hide-nextjs-dev-tools'}>
         <header className="sticky top-0 z-20 border-b border-[var(--border)] bg-white/90 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
             <Link href="/" className="font-semibold tracking-tight">
@@ -30,7 +29,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
             <nav className="flex items-center gap-5 text-sm text-slate-600">
               <Link href="/agents">Agent 广场</Link>
               <Link href="/about">关于鲸创</Link>
-              {canManageAgents && <Link className="font-medium text-[var(--brand)]" href="/admin/collections/agents">Agent 管理</Link>}
+              {currentUser && <Link className="font-medium text-[var(--brand)]" href="/admin/collections/agents">Skill 管理台</Link>}
               {currentUser ? (
                 <><UserMenu name={currentUser.name} email={currentUser.email} /><LogoutButton /></>
               ) : (
@@ -41,10 +40,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
             </nav>
           </div>
         </header>
-        <main className="mx-auto min-h-[calc(100vh-140px)] max-w-6xl px-5 py-10">{children}</main>
-        <footer className="border-t border-[var(--border)] bg-white">
-          <div className="mx-auto max-w-6xl px-5 py-8 text-sm text-slate-500">鲸创 AgentHub · 智能体应用发现平台</div>
-        </footer>
+        <main className="mx-auto min-h-[calc(100vh-65px)] max-w-6xl px-5 py-10">{children}</main>
         <Toaster />
       </body>
     </html>

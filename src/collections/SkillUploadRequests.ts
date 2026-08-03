@@ -55,8 +55,9 @@ const syncDeletedRequestPermission: CollectionAfterDeleteHook = async ({ doc, re
 export const SkillUploadRequests: CollectionConfig = {
   slug: 'skill-upload-requests',
   labels: { singular: 'Skill 上传权限申请', plural: 'Skill 上传权限申请' },
-  admin: { useAsTitle: 'requester', defaultColumns: ['requester', 'status', 'updatedAt'] },
+  admin: { useAsTitle: 'requester', defaultColumns: ['requester', 'status', 'updatedAt'], hidden: ({ user }) => !hasReviewerRole(user) },
   access: {
+    admin: ({ req }) => hasReviewerRole(req.user),
     read: ({ req }) => (hasReviewerRole(req.user) ? true : isActivePlatformUser(req.user) ? { requester: { equals: req.user.id } } : false),
     create: ({ req }) => isActivePlatformUser(req.user),
     update: isReviewer,

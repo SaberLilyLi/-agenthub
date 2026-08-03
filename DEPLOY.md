@@ -1,10 +1,10 @@
 # AgentHub 生产部署交接
 
-本项目是一个 Next.js 与 Payload CMS 一体化服务。部署后包含：应用容器、PostgreSQL、Caddy HTTPS 反向代理；技能包与媒体文件使用腾讯云 COS。
+本项目是一个 Next.js 与 Payload CMS 一体化服务。部署后包含：应用容器、PostgreSQL、Caddy HTTPS 反向代理；技能包与媒体文件保存在 Docker 本地持久卷。
 
 ## 交付边界
 
-交接给部署同事时提供 Git 仓库地址和服务器权限。不要提交或通过 Git 传递 `.env`、`secrets/`、COS 密钥、数据库密码或数据库备份。
+交接给部署同事时提供 Git 仓库地址和服务器权限。不要提交或通过 Git 传递 `.env`、`secrets/`、数据库密码、数据库备份或用户上传文件。
 
 若需要保留已有站点数据，另行通过受控渠道提供 PostgreSQL 备份并在部署前恢复；仅部署代码会得到一个空数据库。
 
@@ -13,7 +13,7 @@
 - Linux 服务器，已安装 Docker Engine 和 Docker Compose v2。
 - 域名 A/AAAA 记录已指向该服务器公网 IP，且公网 80、443 端口开放。
 - 服务器的 80、443 端口未被其他 Web 服务占用。
-- 已准备腾讯云 COS 桶与最小权限 CAM 子账号。
+- 已规划数据库、媒体和 Skill 文件卷的异地备份。
 
 ## 首次部署
 
@@ -26,7 +26,7 @@ openssl rand -base64 48 > secrets/payload_secret
 chmod 600 deploy/.env.production secrets/payload_secret
 ```
 
-编辑 `deploy/.env.production`：至少替换 `DOMAIN`、`POSTGRES_PASSWORD`、`AUDIT_IP_HASH_SECRET`、COS 配置、Turnstile 配置和 `DOWNLOAD_ALLOWED_HOSTS`。生产 Compose 默认启动内部 ClamAV；保留 `CLAMAV_HOST=clamav` 和 `CLAMAV_PORT=3310` 即可。首次启动 ClamAV 会下载病毒库，上传功能会在病毒库就绪后可用。
+编辑 `deploy/.env.production`：至少替换 `DOMAIN`、`POSTGRES_PASSWORD`、`AUDIT_IP_HASH_SECRET` 和 Turnstile 配置。生产 Compose 默认启动内部 ClamAV；保留 `CLAMAV_HOST=clamav` 和 `CLAMAV_PORT=3310` 即可。首次启动 ClamAV 会下载病毒库，上传功能会在病毒库就绪后可用。
 
 先构建并应用数据库迁移：
 
@@ -55,10 +55,11 @@ docker compose -f deploy/docker-compose.production.yml --env-file deploy/.env.pr
 
 ## 备份与恢复
 
-数据库备份应定时执行并保存到服务器之外的安全存储：
+数据库与本地文件卷应定时备份，并保存到服务器之外的安全存储：
 
 ```bash
 docker compose -f deploy/docker-compose.production.yml --env-file deploy/.env.production exec -T postgres pg_dump -U agenthub agenthub > agenthub-$(date +%F).sql
+docker compose -f deploy/docker-compose.production.yml --env-file deploy/.env.production exec -T app tar -czf - -C /app skill-submissions > skill-submissions-$(date +%F).tar.gz
 ```
 
 恢复前先停应用，并确认目标数据库无误：
@@ -69,11 +70,11 @@ docker compose -f deploy/docker-compose.production.yml --env-file deploy/.env.pr
 docker compose -f deploy/docker-compose.production.yml --env-file deploy/.env.production start app
 ```
 
-Docker 卷 `agenthub_postgres` 存放数据库，`agenthub_media` 存放本地媒体缓存；两者都不能替代异地备份。
+Docker 卷 `agenthub_postgres` 存放数据库，`agenthub_media` 存放媒体文件，`agenthub_skill_submissions` 存放 Skill 压缩包；这些卷都不能替代异地备份。
 
 ## 上线验收
 
 - 首页与 `/admin` 可经 HTTPS 打开。
 - 可创建管理员、登录后台。
-- Agent 列表、详情、下载跳转和 COS 文件访问正常。
+- 普通用户管理台仅显示智能体与智能体版本，投稿、审核、下载和拒绝清理流程正常。
 - 检查容器日志：`docker compose -f deploy/docker-compose.production.yml --env-file deploy/.env.production logs --tail=100 app`。

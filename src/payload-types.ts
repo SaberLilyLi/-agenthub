@@ -222,6 +222,7 @@ export interface Category {
  */
 export interface Agent {
   id: number;
+  owner?: (number | null) | User;
   name: string;
   slug: string;
   summary: string;
@@ -250,6 +251,7 @@ export interface Agent {
 export interface AgentVersion {
   id: number;
   agent: number | Agent;
+  package?: (number | null) | SkillSubmission;
   version: string;
   fileSize?: string | null;
   changelog?: string | null;
@@ -259,6 +261,42 @@ export interface AgentVersion {
   publishedAt?: string | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * 压缩包保存在服务器本地持久卷中；管理员审核通过后才发布智能体版本。
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "skill-submissions".
+ */
+export interface SkillSubmission {
+  id: number;
+  owner: number | User;
+  agent?: (number | null) | Agent;
+  name: string;
+  slug: string;
+  summary: string;
+  description?: string | null;
+  category: number | Category;
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  version: string;
+  changelog?: string | null;
+  reviewStatus: 'pending' | 'approved' | 'rejected';
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -285,35 +323,6 @@ export interface DownloadRecord {
   ipHash?: string | null;
   ipHashKeyVersion?: string | null;
   userAgent?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * 文件经安全检查后直接存入 COS；本地不保存上传文件。拒绝后保留审核记录，并通过持久化任务清理 COS 对象。
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "skill-submissions".
- */
-export interface SkillSubmission {
-  id: number;
-  owner: number | User;
-  name: string;
-  slug: string;
-  summary: string;
-  description?: string | null;
-  category: number | Category;
-  tags?:
-    | {
-        tag: string;
-        id?: string | null;
-      }[]
-    | null;
-  version: string;
-  changelog?: string | null;
-  storageKey: string;
-  fileName: string;
-  fileSize: number;
-  reviewStatus: 'pending' | 'approved' | 'rejected';
   updatedAt: string;
   createdAt: string;
 }
@@ -590,6 +599,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "agents_select".
  */
 export interface AgentsSelect<T extends boolean = true> {
+  owner?: T;
   name?: T;
   slug?: T;
   summary?: T;
@@ -617,6 +627,7 @@ export interface AgentsSelect<T extends boolean = true> {
  */
 export interface AgentVersionsSelect<T extends boolean = true> {
   agent?: T;
+  package?: T;
   version?: T;
   fileSize?: T;
   changelog?: T;
@@ -659,6 +670,7 @@ export interface DownloadRecordsSelect<T extends boolean = true> {
  */
 export interface SkillSubmissionsSelect<T extends boolean = true> {
   owner?: T;
+  agent?: T;
   name?: T;
   slug?: T;
   summary?: T;
@@ -672,12 +684,18 @@ export interface SkillSubmissionsSelect<T extends boolean = true> {
       };
   version?: T;
   changelog?: T;
-  storageKey?: T;
-  fileName?: T;
-  fileSize?: T;
   reviewStatus?: T;
   updatedAt?: T;
   createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -807,7 +825,8 @@ export interface CollectionsWidget {
  */
 export interface TaskDeleteRejectedSkillArchive {
   input: {
-    storageKey: string;
+    filename?: string | null;
+    storageKey?: string | null;
   };
   output?: unknown;
 }

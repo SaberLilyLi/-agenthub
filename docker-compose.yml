@@ -14,6 +14,7 @@ services:
         condition: service_healthy
     volumes:
       - agenthub_media:/app/media
+      - agenthub_skill_submissions:/app/skill-submissions
       - ./secrets/payload_secret:/run/secrets/payload_secret:ro
   postgres:
     image: postgres:16-alpine
@@ -33,3 +34,4 @@ services:
 volumes:
   agenthub_postgres:
   agenthub_media:
+  agenthub_skill_submissions:

@@ -18,16 +18,16 @@ pnpm dev -- --port 3102
 
 - `PAYLOAD_SECRET`：至少 32 位随机字符串。
 - `DATABASE_URI`：PostgreSQL 连接串。
-- `DOWNLOAD_ALLOWED_HOSTS`：逗号分隔的 COS 下载域名白名单。
+- `DOWNLOAD_ALLOWED_HOSTS`：可选，仅用于兼容历史外部 HTTPS 下载地址。
 - `NEXT_PUBLIC_SERVER_URL`：站点公网地址。
 - `APP_PORT`、`POSTGRES_PORT`：Docker 端口，默认 3102 和 55432。
 
 ## 发布 Agent
 
-1. 在 `/admin` 创建分类与 Agent，上传封面/截图。
-2. 运营人员将 ZIP 手动上传腾讯云 COS。
-3. 创建 AgentVersion，填写 COS HTTPS 地址、版本号和更新说明。
-4. 发布版本与 Agent。前台下载请求会先记录行为，再通过 302 跳转到白名单 COS 地址。
+1. 普通用户登录 `/admin`，创建自己的智能体草稿。
+2. 保存智能体后，在右侧“Skill 文件投稿”中上传 ZIP/RAR 和填写版本号。
+3. 压缩包保存到本地持久卷，投稿进入待审核状态。
+4. 审核员在“Skill 投稿审核”中通过后，系统创建或更新智能体版本并发布；拒绝后后台任务删除本地压缩包。
 
 ## 验证
 
@@ -48,7 +48,7 @@ docker compose up -d
 docker compose logs -f app
 ```
 
-数据库数据存于 `agenthub_postgres` 卷，媒体存于 `agenthub_media` 卷。备份数据库：
+数据库数据存于 `agenthub_postgres` 卷，媒体存于 `agenthub_media` 卷，Skill 压缩包存于 `agenthub_skill_submissions` 卷。数据库与文件卷都需要备份。备份数据库：
 
 ```bash
 docker compose exec -T postgres pg_dump -U agenthub agenthub > agenthub.sql
@@ -66,4 +66,4 @@ agenthub.example.com {
 
 ## V1 不包含
 
-用户投稿、评论、支付、Redis、CDN、微服务、在线 ZIP 上传或自动 COS 上传。
+评论、支付、Redis、CDN、微服务或 COS 上传。
