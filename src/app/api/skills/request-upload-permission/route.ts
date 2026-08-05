@@ -18,12 +18,19 @@ export async function POST(request: NextRequest) {
   const existing = await payload.find({ collection: 'skill-upload-requests', where: { and: [{ requester: { equals: user.id } }, { status: { equals: 'pending' } }] }, limit: 1, depth: 0, user, overrideAccess: false })
   if (existing.docs.length) return NextResponse.json({ message: '你的上传权限申请正在审核中' }, { status: 409 })
 
-  await payload.create({
-    collection: 'skill-upload-requests',
-    data: { requester: user.id, reason: String(reason).trim().slice(0, 500), status: 'pending' },
-    user,
-    draft: false,
-    overrideAccess: false,
-  })
+  try {
+    await payload.create({
+      collection: 'skill-upload-requests',
+      data: { requester: user.id, reason: String(reason).trim().slice(0, 500), status: 'pending' },
+      user,
+      draft: false,
+      overrideAccess: true,
+    })
+  } catch (error) {
+    if (typeof error === 'object' && error && 'code' in error && error.code === '23505') {
+      return NextResponse.json({ message: '已有待审核的投稿资格申请' }, { status: 409 })
+    }
+    throw error
+  }
   return NextResponse.json({ message: '申请已提交，管理员审核通过后即可投稿 Skill。' }, { status: 201 })
 }

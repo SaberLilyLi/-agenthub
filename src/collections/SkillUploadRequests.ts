@@ -66,7 +66,9 @@ export const SkillUploadRequests: CollectionConfig = {
   access: {
     admin: ({ req }) => hasReviewerRole(req.user),
     read: ({ req }) => (hasReviewerRole(req.user) ? true : isActivePlatformUser(req.user) ? { requester: { equals: req.user.id } } : false),
-    create: ({ req }) => isActivePlatformUser(req.user),
+    // Requests are created only through the guarded endpoint, which enforces
+    // active-permission and duplicate-pending checks before insert.
+    create: () => false,
     update: isReviewer,
     delete: isSystemAdmin,
   },
