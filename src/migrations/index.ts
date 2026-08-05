@@ -10,6 +10,7 @@ import * as migration_20260728_153000_store_skill_submissions_in_cos from './202
 import * as migration_20260728_172000_add_consistency_constraints from './20260728_172000_add_consistency_constraints';
 import * as migration_20260728_173700_add_storage_cleanup_jobs from './20260728_173700_add_storage_cleanup_jobs';
 import * as migration_20260803_183000_local_skill_submissions from './20260803_183000_local_skill_submissions';
+import * as migration_20260805_152000_repair_notification_and_permission_schema from './20260805_152000_repair_notification_and_permission_schema';
 
 export const migrations = [
   {
@@ -71,5 +72,10 @@ export const migrations = [
     up: migration_20260803_183000_local_skill_submissions.up,
     down: migration_20260803_183000_local_skill_submissions.down,
     name: '20260803_183000_local_skill_submissions'
+  },
+  {
+    up: migration_20260805_152000_repair_notification_and_permission_schema.up,
+    down: migration_20260805_152000_repair_notification_and_permission_schema.down,
+    name: '20260805_152000_repair_notification_and_permission_schema'
   },
 ];
