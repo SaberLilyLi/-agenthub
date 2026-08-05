@@ -51,6 +51,9 @@ const syncSkillSubmissionPermission = async (
 const syncChangedRequestPermission: CollectionAfterChangeHook = async ({ doc, operation, previousDoc, req }) => {
   const newlyApproved = doc.status === 'approved' && (operation === 'create' || previousDoc.status !== 'approved')
   await syncSkillSubmissionPermission(doc.requester, req, newlyApproved)
+  if (operation === 'update' && doc.status !== previousDoc.status && ['approved', 'rejected'].includes(doc.status)) {
+    await req.payload.create({ collection: 'notifications', data: { user: requesterIdOf(doc.requester), type: doc.status === 'approved' ? 'permission_approved' : 'permission_rejected', title: doc.status === 'approved' ? '投稿资格已通过' : '投稿资格未通过', message: doc.reviewNote || '请前往个人中心查看审批结果。', link: '/me/submit-skill' }, overrideAccess: true, req })
+  }
   return doc
 }
 

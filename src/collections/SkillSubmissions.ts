@@ -110,6 +110,13 @@ const removeRejectedSubmission: CollectionAfterChangeHook = async ({ doc, operat
   return doc
 }
 
+const notifySubmissionReview: CollectionAfterChangeHook = async ({ doc, operation, previousDoc, req }) => {
+  if (operation === 'update' && doc.reviewStatus !== previousDoc.reviewStatus && ['approved', 'rejected'].includes(doc.reviewStatus)) {
+    await req.payload.create({ collection: 'notifications', data: { user: relationId(doc.owner), type: doc.reviewStatus === 'approved' ? 'skill_approved' : 'skill_rejected', title: doc.reviewStatus === 'approved' ? 'Skill 审核已通过' : 'Skill 审核未通过', message: doc.reviewNote || '请前往个人中心查看审核结果。', link: '/me' }, overrideAccess: true, req })
+  }
+  return doc
+}
+
 export const SkillSubmissions: CollectionConfig = {
   slug: 'skill-submissions',
   labels: { singular: 'Skill 投稿', plural: 'Skill 投稿审核' },
@@ -188,6 +195,6 @@ export const SkillSubmissions: CollectionConfig = {
       }
       return data
     }],
-    afterChange: [publishApprovedSubmission, removeRejectedSubmission],
+    afterChange: [publishApprovedSubmission, removeRejectedSubmission, notifySubmissionReview],
   },
 }

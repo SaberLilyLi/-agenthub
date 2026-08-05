@@ -77,6 +77,7 @@ export interface Config {
     'skill-submissions': SkillSubmission;
     'skill-upload-requests': SkillUploadRequest;
     'skill-submission-permissions': SkillSubmissionPermission;
+    notifications: Notification;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -95,6 +96,7 @@ export interface Config {
     'skill-submissions': SkillSubmissionsSelect<false> | SkillSubmissionsSelect<true>;
     'skill-upload-requests': SkillUploadRequestsSelect<false> | SkillUploadRequestsSelect<true>;
     'skill-submission-permissions': SkillSubmissionPermissionsSelect<false> | SkillSubmissionPermissionsSelect<true>;
+    notifications: NotificationsSelect<false> | NotificationsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -355,6 +357,21 @@ export interface SkillSubmissionPermission {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notifications".
+ */
+export interface Notification {
+  id: number;
+  user: number | User;
+  type: 'permission_approved' | 'permission_rejected' | 'skill_approved' | 'skill_rejected';
+  title: string;
+  message: string;
+  link?: string | null;
+  readAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -508,6 +525,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'skill-submission-permissions';
         value: number | SkillSubmissionPermission;
+      } | null)
+    | ({
+        relationTo: 'notifications';
+        value: number | Notification;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -742,6 +763,20 @@ export interface SkillSubmissionPermissionsSelect<T extends boolean = true> {
   grantedFromRequest?: T;
   revokedAt?: T;
   revokeReason?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notifications_select".
+ */
+export interface NotificationsSelect<T extends boolean = true> {
+  user?: T;
+  type?: T;
+  title?: T;
+  message?: T;
+  link?: T;
+  readAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
