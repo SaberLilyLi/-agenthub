@@ -32,21 +32,20 @@ describe('platform identity boundaries', () => {
   })
 })
 
-describe('least-privilege administrator roles', () => {
-  it('separates content, review, and user-management permissions', () => {
-    const contentAdmin = { id: 1, collection: 'users' as const, role: 'content_admin', disabled: false }
-    const reviewer = { id: 2, collection: 'users' as const, role: 'reviewer', disabled: false }
-    const userAdmin = { id: 3, collection: 'users' as const, role: 'user_admin', disabled: false }
+describe('unified administrator role', () => {
+  it('grants platform management capabilities only to the admin role', () => {
+    const admin = { id: 1, collection: 'users' as const, role: 'admin', disabled: false }
+    const user = { id: 2, collection: 'users' as const, role: 'user', disabled: false }
 
-    expect(hasAdminRole(contentAdmin)).toBe(true)
-    expect(hasContentAdminRole(contentAdmin)).toBe(true)
-    expect(hasReviewerRole(contentAdmin)).toBe(false)
-    expect(hasUserAdminRole(contentAdmin)).toBe(false)
+    expect(hasAdminRole(admin)).toBe(true)
+    expect(hasContentAdminRole(admin)).toBe(true)
+    expect(hasReviewerRole(admin)).toBe(true)
+    expect(hasUserAdminRole(admin)).toBe(true)
 
-    expect(hasReviewerRole(reviewer)).toBe(true)
-    expect(hasContentAdminRole(reviewer)).toBe(false)
-    expect(hasUserAdminRole(userAdmin)).toBe(true)
-    expect(hasReviewerRole(userAdmin)).toBe(false)
+    expect(hasAdminRole(user)).toBe(false)
+    expect(hasContentAdminRole(user)).toBe(false)
+    expect(hasReviewerRole(user)).toBe(false)
+    expect(hasUserAdminRole(user)).toBe(false)
   })
 })
 

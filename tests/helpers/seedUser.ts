@@ -5,7 +5,7 @@ export const testUser = {
   email: 'e2e-system-admin@agenthub.test',
   password: 'e2e-only-password-2026',
   name: 'E2E 系统管理员',
-  role: 'system_admin' as const,
+  role: 'admin' as const,
   disabled: false,
 }
 

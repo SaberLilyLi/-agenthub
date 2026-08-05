@@ -29,7 +29,7 @@ export const AgentPackageUpload: UIFieldClientComponent = () => {
   const owner = data?.owner
   const ownerId = typeof owner === 'object' && owner && 'id' in owner ? owner.id : owner
   const role = typeof user === 'object' && user ? String(user.role || '') : ''
-  const canManageAll = ['admin', 'superadmin', 'system_admin', 'content_admin'].includes(role)
+  const canManageAll = ['admin', 'superadmin'].includes(role)
   const canUpload = Boolean(id && savedSlug && (canManageAll || ownerId === user?.id))
 
   async function upload() {

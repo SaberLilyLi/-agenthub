@@ -47,7 +47,7 @@ describe('local Skill review flow', () => {
     ids.user = owner.id
     const reviewer = await payload.create({
       collection: 'users',
-      data: { name: '本地审核员', email: `reviewer-${suffix}@agenthub.test`, password: 'local-test-password', role: 'reviewer' },
+      data: { name: '本地管理员', email: `reviewer-${suffix}@agenthub.test`, password: 'local-test-password', role: 'admin' },
       overrideAccess: true,
     })
     ids.reviewer = reviewer.id

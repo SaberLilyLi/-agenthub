@@ -24,7 +24,7 @@ export function AdminActions() {
   const { user } = useAuth()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const role = typeof user === 'object' && user ? String(user.role || '') : ''
-  const canReview = ['admin', 'superadmin', 'system_admin', 'reviewer'].includes(role)
+  const canReview = ['admin', 'superadmin'].includes(role)
 
   async function logout() {
     setIsLoggingOut(true)

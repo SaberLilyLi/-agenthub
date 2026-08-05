@@ -72,7 +72,7 @@ describe('route proxy authorization', () => {
     const secretFile = join(temporarySecretDirectory, 'payload_secret')
     await writeFile(secretFile, secret, 'utf8')
     process.env.PAYLOAD_SECRET_FILE = secretFile
-    const adminToken = await token({ id: 1, collection: 'users', role: 'system_admin' })
+    const adminToken = await token({ id: 1, collection: 'users', role: 'admin' })
 
     const response = await proxy(request('/admin', `agenthub-admin-token=${adminToken}`))
 
