@@ -6,6 +6,15 @@ import { getPayload } from 'payload'
 import { payloadForRequest } from '@/lib/auth'
 import { hasActiveSkillSubmissionPermission } from '@/access/skillSubmissionPermission'
 
+function isUniqueViolation(error: unknown): boolean {
+  let current = error
+  for (let depth = 0; depth < 3 && current && typeof current === 'object'; depth += 1) {
+    if ('code' in current && current.code === '23505') return true
+    current = 'cause' in current ? current.cause : undefined
+  }
+  return false
+}
+
 export async function POST(request: NextRequest) {
   const { user } = await payloadForRequest(request)
   if (!user || user.collection !== 'users') return NextResponse.json({ message: '请先登录后再申请权限' }, { status: 401 })
@@ -27,7 +36,7 @@ export async function POST(request: NextRequest) {
       overrideAccess: true,
     })
   } catch (error) {
-    if (typeof error === 'object' && error && 'code' in error && error.code === '23505') {
+    if (isUniqueViolation(error)) {
       return NextResponse.json({ message: '已有待审核的投稿资格申请' }, { status: 409 })
     }
     throw error
