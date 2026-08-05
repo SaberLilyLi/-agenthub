@@ -1,6 +1,6 @@
 import { jwtVerify } from 'jose'
 import { NextResponse, type NextRequest } from 'next/server'
-import { MAX_SKILL_UPLOAD_REQUEST_BYTES } from './lib/uploadLimits'
+import { MAX_SKILL_FILE_LABEL, MAX_SKILL_UPLOAD_REQUEST_BYTES } from './lib/uploadLimits'
 import { requiredSecret } from './lib/serverEnv'
 
 type Session = {
@@ -123,7 +123,7 @@ function protectUploadSize(request: NextRequest) {
   if (!rawLength) return NextResponse.json({ message: '上传请求必须提供 Content-Length' }, { status: 411 })
   const length = Number(rawLength)
   if (!Number.isSafeInteger(length) || length <= 0 || length > MAX_SKILL_UPLOAD_REQUEST_BYTES) {
-    return NextResponse.json({ message: '上传文件不能超过 20 MB' }, { status: 413 })
+    return NextResponse.json({ message: `上传文件不能超过 ${MAX_SKILL_FILE_LABEL}` }, { status: 413 })
   }
   return null
 }

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { csrfHeaders } from '@/lib/client/csrf'
+import { MAX_SKILL_FILE_LABEL } from '@/lib/uploadLimits'
 
 export default function AdminUpload() {
   const [message, setMessage] = useState('')
@@ -24,7 +25,7 @@ export default function AdminUpload() {
         <label className="block text-sm font-medium">Agent ID<Input className="mt-2" name="agentId" inputMode="numeric" placeholder="例如：12" required /></label>
         <label className="block text-sm font-medium">版本号<Input className="mt-2" name="version" placeholder="1.0.0" required /></label>
         <label className="block text-sm font-medium">更新说明<Textarea className="mt-2" name="changelog" placeholder="例如：新增客户跟进邮件模板。" /></label>
-        <label className="block text-sm font-medium">Skill 压缩包（最大 20 MB）<Input className="mt-2" name="file" type="file" accept=".zip,application/zip,.rar,application/vnd.rar" required /></label>
+        <label className="block text-sm font-medium">Skill 压缩包（最大 {MAX_SKILL_FILE_LABEL}）<Input className="mt-2" name="file" type="file" accept=".zip,application/zip,.rar,application/vnd.rar" required /></label>
         <Button>保存到本地并提交审核</Button>
         {message && <p className="break-all text-sm text-slate-600">{message}</p>}
       </form>
