@@ -34,13 +34,15 @@ export default async function Layout({ children }: { children: React.ReactNode }
             <div className="flex items-center gap-3">
               {currentUser ? (
                 <>
-                  <Link
-                    href="/me/submit-skill"
-                    className="hidden items-center gap-1.5 rounded-md border border-[var(--border)] px-3 py-1.5 text-sm text-slate-600 transition hover:border-[var(--brand)] hover:text-[var(--brand)] sm:inline-flex"
-                  >
-                    <Upload className="size-4" />
-                    投稿 Skill
-                  </Link>
+                  {!hasAdminRole(currentUser) && (
+                    <Link
+                      href="/me/submit-skill"
+                      className="hidden items-center gap-1.5 rounded-md border border-[var(--border)] px-3 py-1.5 text-sm text-slate-600 transition hover:border-[var(--brand)] hover:text-[var(--brand)] sm:inline-flex"
+                    >
+                      <Upload className="size-4" />
+                      投稿 Skill
+                    </Link>
+                  )}
                   <UserMenu name={currentUser.name} email={currentUser.email} isAdmin={hasAdminRole(currentUser)} />
                 </>
               ) : (

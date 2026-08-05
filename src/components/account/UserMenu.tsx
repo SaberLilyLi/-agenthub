@@ -50,10 +50,12 @@ export function UserMenu({ name, email, isAdmin }: { name: string; email: string
           <Download />
           我的下载
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => router.push('/me/submit-skill')}>
-          <Upload />
-          投稿 Skill
-        </DropdownMenuItem>
+        {!isAdmin && (
+          <DropdownMenuItem onSelect={() => router.push('/me/submit-skill')}>
+            <Upload />
+            投稿 Skill
+          </DropdownMenuItem>
+        )}
         {isAdmin && (
           <>
             <DropdownMenuSeparator />

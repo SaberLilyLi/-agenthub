@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
+import { hasAdminRole } from '@/access/isAdmin'
 import { UserCenterDashboard } from '@/components/account/UserCenterDashboard'
 import { payloadForHeaders } from '@/lib/auth'
 import { getUserCenterData } from '@/lib/userCenter'
@@ -10,5 +11,5 @@ export default async function Me() {
   if (!user || user.collection !== 'users') redirect('/login?next=/me')
 
   const dashboard = await getUserCenterData(payload, user.id)
-  return <UserCenterDashboard name={user.name} dashboard={dashboard} />
+  return <UserCenterDashboard name={user.name} dashboard={dashboard} isAdmin={hasAdminRole(user)} />
 }

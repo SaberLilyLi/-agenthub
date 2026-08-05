@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
+import { hasAdminRole } from '@/access/isAdmin'
 import { SkillSubmissionForm } from '@/components/account/SkillSubmissionForm'
 import { SkillUploadPermissionRequest } from '@/components/account/SkillUploadPermissionRequest'
 import { payloadForHeaders } from '@/lib/auth'
@@ -10,6 +11,9 @@ import { payloadForHeaders } from '@/lib/auth'
 export default async function SubmitSkillPage() {
   const { payload, user } = await payloadForHeaders(await headers())
   if (!user || user.collection !== 'users') redirect('/login?next=/me/submit-skill')
+  // Admins publish and upload packages in the admin console; the creator
+  // permission/review funnel is only for ordinary contributors.
+  if (hasAdminRole(user)) redirect('/admin/collections/agents')
   const categories = await payload.find({ collection: 'categories', limit: 100, sort: 'name', depth: 0 })
   const permission = await payload.find({ collection: 'skill-submission-permissions', where: { user: { equals: user.id } }, limit: 1, depth: 0, overrideAccess: true })
   const canSubmit = permission.docs[0]?.status === 'active' && typeof permission.docs[0]?.expiresAt === 'string' && Date.parse(permission.docs[0].expiresAt) > Date.now()
