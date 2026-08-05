@@ -7,6 +7,10 @@ import { hasSuperAdminRole, isSuperAdmin } from '../../access/isSuperAdmin'
 const revokeSkillSubmissionPermissionOnDisable: CollectionAfterChangeHook = async ({ doc, operation, previousDoc, req }) => {
   if (operation === 'update' && previousDoc.disabled !== true && doc.disabled === true) {
     await req.payload.update({ collection: 'users', id: doc.id, data: { canSubmitSkills: false, skillSubmissionPermissionExpiresAt: null }, overrideAccess: true, req })
+    const permission = await req.payload.find({ collection: 'skill-submission-permissions', where: { user: { equals: doc.id } }, limit: 1, depth: 0, overrideAccess: true, req })
+    if (permission.docs[0] && permission.docs[0].status !== 'revoked') {
+      await req.payload.update({ collection: 'skill-submission-permissions', id: permission.docs[0].id, data: { status: 'revoked', revokeReason: '用户账户已被禁用' }, overrideAccess: true, req })
+    }
   }
   return doc
 }
