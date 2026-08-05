@@ -140,6 +140,9 @@ export const SkillSubmissions: CollectionConfig = {
     filesRequiredOnCreate: true,
   },
   fields: [
+    { name: 'reviewer', type: 'relationship', relationTo: 'users', admin: { readOnly: true }, access: { create: () => false, update: () => false } },
+    { name: 'reviewNote', type: 'textarea', maxLength: 1000, access: { create: () => false, update: ({ req }) => hasReviewerRole(req.user) } },
+    { name: 'reviewedAt', type: 'date', admin: { readOnly: true }, access: { create: () => false, update: () => false } },
     { name: 'owner', label: '投稿用户', type: 'relationship', relationTo: 'users', required: true, admin: { readOnly: true }, access: { create: () => false, update: () => false } },
     { name: 'agent', label: '目标智能体', type: 'relationship', relationTo: 'agents', admin: { readOnly: true }, access: { create: () => false, update: () => false } },
     { name: 'name', label: 'Skill 名称', type: 'text', required: true },
@@ -171,6 +174,11 @@ export const SkillSubmissions: CollectionConfig = {
         data.reviewStatus = 'pending'
       }
       if (operation === 'update' && req.file) throw new Error('投稿后不能替换压缩包，请创建新的投稿')
+      if (operation === 'update' && data.reviewStatus && data.reviewStatus !== originalDoc?.reviewStatus && ['approved', 'rejected'].includes(String(data.reviewStatus))) {
+        if (!String(data.reviewNote || '').trim()) throw new Error('审核通过或拒绝时必须填写审核意见')
+        data.reviewer = req.user?.id
+        data.reviewedAt = new Date().toISOString()
+      }
       if (
         operation === 'update' &&
         ['approved', 'rejected'].includes(String(originalDoc?.reviewStatus)) &&

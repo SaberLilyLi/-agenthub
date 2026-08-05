@@ -263,6 +263,9 @@ export interface AgentVersion {
  */
 export interface SkillSubmission {
   id: number;
+  reviewer?: (number | null) | User;
+  reviewNote?: string | null;
+  reviewedAt?: string | null;
   owner: number | User;
   agent?: (number | null) | Agent;
   name: string;
@@ -682,6 +685,9 @@ export interface DownloadRecordsSelect<T extends boolean = true> {
  * via the `definition` "skill-submissions_select".
  */
 export interface SkillSubmissionsSelect<T extends boolean = true> {
+  reviewer?: T;
+  reviewNote?: T;
+  reviewedAt?: T;
   owner?: T;
   agent?: T;
   name?: T;
