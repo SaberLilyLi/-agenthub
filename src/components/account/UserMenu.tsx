@@ -1,6 +1,6 @@
 'use client'
 
-import { LogOut, UserRound } from 'lucide-react'
+import { Download, Heart, LayoutDashboard, LogOut, Settings, Upload, UserRound } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-export function UserMenu({ name, email }: { name: string; email: string }) {
+export function UserMenu({ name, email, isAdmin }: { name: string; email: string; isAdmin?: boolean }) {
   const router = useRouter()
   const initial = name.trim().slice(0, 1).toUpperCase() || '用'
 
@@ -32,7 +32,7 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
         </Avatar>
         <span className="hidden max-w-28 truncate sm:inline">{name}</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-52">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <p className="truncate">{name}</p>
           <p className="mt-0.5 truncate text-xs font-normal text-slate-500">{email}</p>
@@ -42,6 +42,32 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
           <UserRound />
           账户中心
         </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => router.push('/me/favorites')}>
+          <Heart />
+          我的收藏
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => router.push('/me/downloads')}>
+          <Download />
+          我的下载
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => router.push('/me/submit-skill')}>
+          <Upload />
+          投稿 Skill
+        </DropdownMenuItem>
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => router.push('/admin/collections/agents')}>
+              <Settings />
+              Skill 管理台
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => router.push('/admin')}>
+              <LayoutDashboard />
+              平台管理
+            </DropdownMenuItem>
+          </>
+        )}
+        <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={logout}>
           <LogOut />
           退出登录

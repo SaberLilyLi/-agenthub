@@ -1,8 +1,127 @@
-import config from '@payload-config'
-import { getPayload, type Where } from 'payload'
-import { AgentGrid } from '@/components/agent/AgentGrid'
+import Link from 'next/link'
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+
+import { AgentCardList } from '@/components/agent/AgentCardList'
+import { FilterBar, buildAgentsHref } from '@/components/agent/FilterBar'
 import { EmptyState } from '@/components/common/EmptyState'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-type Search = { q?: string; sort?: 'latest'|'downloads'|'featured'; page?:string }
-export default async function Agents({searchParams}:{searchParams:Promise<Search>}){const query=await searchParams;const payload=await getPayload({config});const page=Math.max(1,Number(query.page)||1);const where:Where=query.q?{and:[{status:{equals:'published'}},{or:[{name:{contains:query.q}},{summary:{contains:query.q}}]}]}:{status:{equals:'published'}};const sort=query.sort==='downloads'?'-downloadCount':query.sort==='featured'?'-featured':'-publishedAt';const result=await payload.find({collection:'agents',where,limit:12,page,sort});return <><div className="mb-8"><p className="text-sm font-medium text-[var(--brand)]">官方 Agent 市场</p><h1 className="mt-2 text-3xl font-bold tracking-tight">发现适合你的智能体</h1></div><form className="mb-8 flex flex-col gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow)] sm:flex-row"><Input name="q" defaultValue={query.q} placeholder="搜索名称或使用场景"/><select name="sort" defaultValue={query.sort||'latest'} className="h-10 rounded-md border border-[var(--border)] bg-white px-3 text-sm"><option value="latest">最新发布</option><option value="downloads">最多下载</option><option value="featured">推荐优先</option></select><Button>搜索</Button></form>{result.docs.length?<AgentGrid agents={result.docs}/>:<EmptyState title="暂时还没有已发布的 Agent" description={query.q?'没有找到匹配的 Agent，请更换关键词。':'鲸创正在整理第一批实用智能体应用。'}/>}</>}
+import { findPublishedAgents, getCategorySummaries, getLatestVersionMap, getPayloadClient, toCardData } from '@/lib/agentQueries'
+import { cn } from '@/utilities/ui'
+
+type Search = { q?: string; category?: string; sort?: string; page?: string }
+
+const SORTS = ['featured', 'latest', 'downloads'] as const
+const PAGE_SIZE = 12
+
+export default async function Agents({ searchParams }: { searchParams: Promise<Search> }) {
+  const query = await searchParams
+  const payload = await getPayloadClient()
+
+  const page = Math.max(1, Number(query.page) || 1)
+  const sort = SORTS.includes(query.sort as (typeof SORTS)[number]) ? (query.sort as (typeof SORTS)[number]) : 'latest'
+
+  const [categories, result] = await Promise.all([
+    getCategorySummaries(payload),
+    findPublishedAgents(payload, { q: query.q, categorySlug: query.category, sort, page, limit: PAGE_SIZE }),
+  ])
+  const versions = await getLatestVersionMap(
+    payload,
+    result.docs.map((agent) => agent.id),
+  )
+  const cards = result.docs.map((agent) => toCardData(agent, versions))
+  const activeCategories = categories.filter((category) => category.count > 0)
+
+  return (
+    <>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Agent 广场</h1>
+        <p className="mt-2 text-slate-600">发现并安装适合你的 Agent 和 Skill</p>
+      </div>
+
+      <form action="/agents" className="mb-4 flex items-center gap-2 rounded-[10px] border border-[var(--border)] bg-white p-2 shadow-[var(--shadow)]">
+        <Search className="ml-2 size-4 shrink-0 text-slate-400" />
+        <input
+          type="search"
+          name="q"
+          defaultValue={query.q}
+          placeholder="搜索 Agent、功能或使用场景"
+          className="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
+        />
+        {query.category && <input type="hidden" name="category" value={query.category} />}
+        {sort !== 'latest' && <input type="hidden" name="sort" value={sort} />}
+        <button
+          type="submit"
+          className="h-9 shrink-0 rounded-lg bg-[var(--brand)] px-5 text-sm font-medium text-white transition hover:bg-[var(--brand-hover)]"
+        >
+          搜索
+        </button>
+      </form>
+
+      <FilterBar categories={activeCategories} current={{ q: query.q, category: query.category, sort }} totalDocs={result.totalDocs} />
+
+      <div className="mt-5">
+        {cards.length ? (
+          <>
+            <AgentCardList agents={cards} />
+            {result.totalPages > 1 && (
+              <nav className="mt-8 flex items-center justify-center gap-3 text-sm">
+                <PageLink
+                  href={buildAgentsHref({ q: query.q, category: query.category, sort, page: String(page - 1) })}
+                  disabled={page <= 1}
+                >
+                  <ChevronLeft className="size-4" />
+                  上一页
+                </PageLink>
+                <span className="text-slate-500">
+                  第 {result.page} / {result.totalPages} 页
+                </span>
+                <PageLink
+                  href={buildAgentsHref({ q: query.q, category: query.category, sort, page: String(page + 1) })}
+                  disabled={page >= result.totalPages}
+                >
+                  下一页
+                  <ChevronRight className="size-4" />
+                </PageLink>
+              </nav>
+            )}
+          </>
+        ) : (
+          <EmptyState
+            title="没有找到匹配的 Agent"
+            description={query.q || query.category ? '请更换关键词或调整筛选条件。' : '鲸创正在整理第一批实用智能体应用。'}
+            action={
+              query.q || query.category ? (
+                <Link
+                  href="/agents"
+                  className="rounded-md border border-[var(--brand)] px-4 py-2 text-sm font-medium text-[var(--brand)] transition hover:bg-[var(--brand-soft)]"
+                >
+                  清空筛选条件
+                </Link>
+              ) : undefined
+            }
+          />
+        )}
+      </div>
+    </>
+  )
+}
+
+function PageLink({ href, disabled, children, className }: { href: string; disabled?: boolean; children: React.ReactNode; className?: string }) {
+  if (disabled) {
+    return (
+      <span className={cn('inline-flex cursor-not-allowed items-center gap-1 rounded-md border border-[var(--border)] px-3 py-1.5 text-slate-300', className)}>
+        {children}
+      </span>
+    )
+  }
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'inline-flex items-center gap-1 rounded-md border border-[var(--border)] bg-white px-3 py-1.5 text-slate-600 transition hover:border-[var(--brand)] hover:text-[var(--brand)]',
+        className,
+      )}
+    >
+      {children}
+    </Link>
+  )
+}

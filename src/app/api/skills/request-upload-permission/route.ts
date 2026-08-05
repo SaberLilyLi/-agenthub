@@ -13,6 +13,8 @@ export async function POST(request: NextRequest) {
 
   const { reason = '' } = await request.json().catch(() => ({})) as { reason?: unknown }
   const payload = await getPayload({ config })
+  const permission = await payload.find({ collection: 'skill-submission-permissions', where: { user: { equals: user.id } }, limit: 1, depth: 0, overrideAccess: true })
+  if (hasActiveSkillSubmissionPermission(permission.docs[0])) return NextResponse.json({ message: '已有有效投稿资格' }, { status: 409 })
   const existing = await payload.find({ collection: 'skill-upload-requests', where: { and: [{ requester: { equals: user.id } }, { status: { equals: 'pending' } }] }, limit: 1, depth: 0, user, overrideAccess: false })
   if (existing.docs.length) return NextResponse.json({ message: '你的上传权限申请正在审核中' }, { status: 409 })
 

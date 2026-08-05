@@ -4,6 +4,7 @@ import { payloadForRequest } from '@/lib/auth'
 import { skillFileExtension, skillFileTypes } from '@/lib/skillSubmission'
 import { inspectUpload } from '@/lib/uploadSecurity'
 import { MAX_SKILL_FILE_BYTES, MAX_SKILL_FILE_LABEL } from '@/lib/uploadLimits'
+import { hasActiveSkillSubmissionPermission } from '@/access/skillSubmissionPermission'
 
 export const runtime = 'nodejs'
 
@@ -13,6 +14,11 @@ const validVersion = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/
 export async function POST(request: NextRequest) {
   const { payload, user } = await payloadForRequest(request)
   if (!user) return NextResponse.json({ message: '请先登录后再投稿' }, { status: 401 })
+
+  const permission = await payload.find({ collection: 'skill-submission-permissions', where: { user: { equals: user.id } }, limit: 1, depth: 0, overrideAccess: true })
+  if (!hasActiveSkillSubmissionPermission(permission.docs[0])) {
+    return NextResponse.json({ message: '当前账户尚无有效的 Skill 投稿资格，请先申请并等待审核。' }, { status: 403 })
+  }
 
   const form = await request.formData()
   const file = form.get('file')

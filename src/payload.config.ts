@@ -13,6 +13,7 @@ import { Favorites } from './collections/Favorites'
 import { DownloadRecords } from './collections/DownloadRecords'
 import { SkillSubmissions } from './collections/SkillSubmissions'
 import { SkillUploadRequests } from './collections/SkillUploadRequests'
+import { SkillSubmissionPermissions } from './collections/SkillSubmissionPermissions'
 import { SiteSettings } from './globals/SiteSettings'
 import { deleteRejectedSkillArchiveTask } from './jobs/deleteRejectedSkillArchive'
 import { requiredDatabaseConnection, requiredSecret } from './lib/serverEnv'
@@ -34,7 +35,7 @@ export default buildConfig({
   sharp,
   // `admins` was a legacy auth collection. Keeping it registered would expose
   // a second identity source to Payload's REST and auth endpoints.
-  collections: [Users, Media, Categories, Agents, AgentVersions, Favorites, DownloadRecords, SkillSubmissions, SkillUploadRequests],
+  collections: [Users, Media, Categories, Agents, AgentVersions, Favorites, DownloadRecords, SkillSubmissions, SkillUploadRequests, SkillSubmissionPermissions],
   globals: [SiteSettings],
   jobs: {
     tasks: [deleteRejectedSkillArchiveTask],

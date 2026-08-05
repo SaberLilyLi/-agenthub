@@ -5,19 +5,19 @@ const hasRole = (user: unknown, roles: string[]) =>
   isActivePlatformUser(user) && roles.includes(String(user.role))
 
 export const hasAdminRole = (user: unknown): boolean =>
-  hasRole(user, ['superadmin', 'system_admin', 'content_admin', 'reviewer', 'user_admin', 'admin'])
+  hasRole(user, ['superadmin', 'admin'])
 
 export const hasSystemAdminRole = (user: unknown): boolean =>
-  hasRole(user, ['superadmin', 'system_admin', 'admin'])
+  hasAdminRole(user)
 
 export const hasContentAdminRole = (user: unknown): boolean =>
-  hasRole(user, ['superadmin', 'system_admin', 'content_admin', 'admin'])
+  hasAdminRole(user)
 
 export const hasReviewerRole = (user: unknown): boolean =>
-  hasRole(user, ['superadmin', 'system_admin', 'reviewer', 'admin'])
+  hasAdminRole(user)
 
 export const hasUserAdminRole = (user: unknown): boolean =>
-  hasRole(user, ['superadmin', 'system_admin', 'user_admin', 'admin'])
+  hasAdminRole(user)
 
 export const isAdmin: Access = ({ req }) => hasAdminRole(req.user)
 export const isSystemAdmin: Access = ({ req }) => hasSystemAdminRole(req.user)

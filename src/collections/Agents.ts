@@ -1,4 +1,10 @@
-import type { Access, CollectionBeforeChangeHook, CollectionConfig, Where } from 'payload'
+import type {
+  Access,
+  CollectionBeforeChangeHook,
+  CollectionBeforeDeleteHook,
+  CollectionConfig,
+  Where,
+} from 'payload'
 
 import { hasContentAdminRole, hasReviewerRole } from '../access/isAdmin'
 import { isActivePlatformUser } from '../access/isActivePlatformUser'
@@ -41,6 +47,39 @@ const protectContributorFields: CollectionBeforeChangeHook = ({ data, operation,
   return data
 }
 
+/**
+ * Child FKs use ON DELETE SET NULL while agent_id columns are NOT NULL.
+ * Delete dependents first so admin/API agent deletes do not hit Postgres 23502.
+ */
+const cascadeDeleteAgentRelations: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  const agentId = typeof id === 'number' ? id : Number(id)
+  if (!Number.isFinite(agentId)) return
+
+  const whereAgent = { agent: { equals: agentId } } as const
+  const shared = { overrideAccess: true as const, req }
+
+  await req.payload.delete({ collection: 'download-records', where: whereAgent, ...shared })
+  await req.payload.delete({ collection: 'favorites', where: whereAgent, ...shared })
+  await req.payload.delete({ collection: 'agent-versions', where: whereAgent, ...shared })
+
+  const linkedSubmissions = await req.payload.find({
+    collection: 'skill-submissions',
+    where: whereAgent,
+    depth: 0,
+    limit: 1000,
+    pagination: false,
+    ...shared,
+  })
+  for (const submission of linkedSubmissions.docs) {
+    await req.payload.update({
+      collection: 'skill-submissions',
+      id: submission.id,
+      data: { agent: null },
+      ...shared,
+    })
+  }
+}
+
 const contentAdminOnly = ({ req }: { req: { user?: unknown } }) => hasContentAdminRole(req.user)
 const showToContentAdmin = (_data: unknown, _siblingData: unknown, { user }: { user?: unknown }) => hasContentAdminRole(user)
 
@@ -58,7 +97,10 @@ export const Agents: CollectionConfig = {
     update: updateAgent,
     delete: deleteAgent,
   },
-  hooks: { beforeChange: [protectContributorFields] },
+  hooks: {
+    beforeChange: [protectContributorFields],
+    beforeDelete: [cascadeDeleteAgentRelations],
+  },
   fields: [
     {
       name: 'owner',

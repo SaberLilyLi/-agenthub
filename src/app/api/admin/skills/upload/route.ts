@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { hasContentAdminRole } from '@/access/isAdmin'
+import { hasAdminRole } from '@/access/isAdmin'
 import { payloadForRequest } from '@/lib/auth'
 import { skillFileExtension, skillFileTypes } from '@/lib/skillSubmission'
 import { inspectUpload, UploadSecurityError } from '@/lib/uploadSecurity'
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   try {
     const agent = await payload.findByID({ collection: 'agents', id: agentId, depth: 0, overrideAccess: true })
     const ownerId = agent.owner ? relationId(agent.owner) : null
-    if (!hasContentAdminRole(user) && ownerId !== user.id) {
+    if (!hasAdminRole(user)) {
       return NextResponse.json({ message: '只能为自己创建的智能体投稿版本' }, { status: 403 })
     }
 

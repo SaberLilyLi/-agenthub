@@ -60,6 +60,17 @@ function unauthenticated(request: NextRequest) {
   return NextResponse.redirect(login)
 }
 
+function administratorOnly(request: NextRequest) {
+  if (pathMatches(request.nextUrl.pathname, '/api')) {
+    return NextResponse.json({ message: '仅管理员可访问此接口' }, { status: 403 })
+  }
+  return NextResponse.redirect(new URL('/', request.url))
+}
+
+function isAdministratorSession(session: Session | null): boolean {
+  return session?.collection === 'users' && ['admin', 'superadmin'].includes(String(session.role))
+}
+
 function csrfRejected(message: string) {
   return NextResponse.json({ message }, { status: 403 })
 }
@@ -195,6 +206,7 @@ export async function proxy(request: NextRequest) {
   if (isAdminRoute) {
     const session = await sessionFromCookie(request, adminCookie)
     if (!session || session.collection !== 'users') return unauthenticated(request)
+    if (!isAdministratorSession(session)) return administratorOnly(request)
     return withCsrfCookie(request, NextResponse.next())
   }
 

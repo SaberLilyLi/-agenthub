@@ -76,6 +76,7 @@ export interface Config {
     'download-records': DownloadRecord;
     'skill-submissions': SkillSubmission;
     'skill-upload-requests': SkillUploadRequest;
+    'skill-submission-permissions': SkillSubmissionPermission;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -93,6 +94,7 @@ export interface Config {
     'download-records': DownloadRecordsSelect<false> | DownloadRecordsSelect<true>;
     'skill-submissions': SkillSubmissionsSelect<false> | SkillSubmissionsSelect<true>;
     'skill-upload-requests': SkillUploadRequestsSelect<false> | SkillUploadRequestsSelect<true>;
+    'skill-submission-permissions': SkillSubmissionPermissionsSelect<false> | SkillSubmissionPermissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -151,18 +153,9 @@ export interface User {
   id: number;
   name: string;
   avatar?: (number | null) | Media;
-  role?: ('superadmin' | 'system_admin' | 'content_admin' | 'reviewer' | 'user_admin' | 'paid_user' | 'user') | null;
+  role?: ('superadmin' | 'admin' | 'user') | null;
   disabled?: boolean | null;
-  membershipStatus?: ('free' | 'active' | 'expired' | 'cancelled') | null;
-  membershipExpiresAt?: string | null;
-  plan?: ('monthly' | 'yearly' | 'lifetime') | null;
-  /**
-   * 由“Skill 上传权限申请”审核通过后自动授予。
-   */
   canSubmitSkills?: boolean | null;
-  /**
-   * 投稿权限过期时间；由权限申请审核流程维护。
-   */
   skillSubmissionPermissionExpiresAt?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -332,9 +325,28 @@ export interface DownloadRecord {
  */
 export interface SkillUploadRequest {
   id: number;
+  reviewer?: (number | null) | User;
+  reviewNote?: string | null;
+  reviewedAt?: string | null;
   requester: number | User;
   reason?: string | null;
   status: 'pending' | 'approved' | 'rejected';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "skill-submission-permissions".
+ */
+export interface SkillSubmissionPermission {
+  id: number;
+  user: number | User;
+  status: 'active' | 'revoked' | 'expired';
+  expiresAt: string;
+  grantedBy?: (number | null) | User;
+  grantedFromRequest?: (number | null) | SkillUploadRequest;
+  revokedAt?: string | null;
+  revokeReason?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -489,6 +501,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'skill-upload-requests';
         value: number | SkillUploadRequest;
+      } | null)
+    | ({
+        relationTo: 'skill-submission-permissions';
+        value: number | SkillSubmissionPermission;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -541,9 +557,6 @@ export interface UsersSelect<T extends boolean = true> {
   avatar?: T;
   role?: T;
   disabled?: T;
-  membershipStatus?: T;
-  membershipExpiresAt?: T;
-  plan?: T;
   canSubmitSkills?: T;
   skillSubmissionPermissionExpiresAt?: T;
   updatedAt?: T;
@@ -702,9 +715,27 @@ export interface SkillSubmissionsSelect<T extends boolean = true> {
  * via the `definition` "skill-upload-requests_select".
  */
 export interface SkillUploadRequestsSelect<T extends boolean = true> {
+  reviewer?: T;
+  reviewNote?: T;
+  reviewedAt?: T;
   requester?: T;
   reason?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "skill-submission-permissions_select".
+ */
+export interface SkillSubmissionPermissionsSelect<T extends boolean = true> {
+  user?: T;
+  status?: T;
+  expiresAt?: T;
+  grantedBy?: T;
+  grantedFromRequest?: T;
+  revokedAt?: T;
+  revokeReason?: T;
   updatedAt?: T;
   createdAt?: T;
 }
