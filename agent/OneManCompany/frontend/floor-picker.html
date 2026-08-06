@@ -413,7 +413,7 @@
 // ─────────────────────────────────────────────────
 // Spritesheet
 // ─────────────────────────────────────────────────
-const ROOM_PATH = '/assets/office/tilesets/Modern_Office_Revamped_v1.2/1_Room_Builder_Office/Room_Builder_Office_32x32.png';
+const ROOM_PATH = (typeof omcUrl === 'function' ? omcUrl('/assets/office/tilesets/Modern_Office_Revamped_v1.2/1_Room_Builder_Office/Room_Builder_Office_32x32.png') : '/assets/office/tilesets/Modern_Office_Revamped_v1.2/1_Room_Builder_Office/Room_Builder_Office_32x32.png');
 
 let roomImg = null;
 const sheetReady = new Promise(res => {

@@ -287,7 +287,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8001/oneManCompany/
 | 页面无 CSS、「离线」 | URL 无尾斜杠，相对资源打到 `/style.css` | 确认 `<base href>` 与 `omc-root.js`；访问 `/oneManCompany/` |
 | API 打到 Payload | 未挂 `OMC_ROOT_PATH` 或前端未改写 `/api` | 检查 env 与 `omc-root.js` |
 | WS 连不上 | Next rewrite 不支持 WS | 确认 app.js 回退到 `:8001/oneManCompany/ws` |
-| 办公室空白 | tileset 未部署 | 勿 ignore tileset；确认 PNG 在产物中 |
+| 办公室空白 / 只有色块像素点 | tileset 未部署，或路径仍为 `/assets/...` 未带前缀 | 勿 ignore tileset；确认 `office-tileatlas.js` 用 `omcUrl('/assets/office/tilesets')`；`omc-root.js` 需改写 `/assets` |
 | 母仓库 `agent` 空 | 残留子目录 `.git` | 删除嵌套 `.git` 再 `git add agent/` |
 | `/oneManCompany/` 307 死循环 | 错误的 trailingSlash redirect | 去掉该 redirect，靠 base 标签 |
 

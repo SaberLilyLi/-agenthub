@@ -144,8 +144,16 @@ const TILE_DEFS = {
 };
 
 class TileAtlas {
-  constructor(basePath = '/assets/office/tilesets') {
-    this._basePath = basePath;
+  constructor(basePath) {
+    // Under AgentHub mount (/oneManCompany), absolute /assets/* would hit the
+    // parent app and 404 — resolve through omcUrl / __OMC_ROOT__ when present.
+    const resolved =
+      basePath ||
+      (typeof omcUrl === 'function' ? omcUrl('/assets/office/tilesets') : null) ||
+      ((typeof window !== 'undefined' && window.__OMC_ROOT__)
+        ? `${window.__OMC_ROOT__}/assets/office/tilesets`
+        : '/assets/office/tilesets');
+    this._basePath = resolved;
     this._images  = {};   // sheetKey → HTMLImageElement
     this._ready   = {};   // sheetKey → true (attempted load)
     this._loading = {};   // sheetKey → Promise

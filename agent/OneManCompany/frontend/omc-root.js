@@ -2,8 +2,8 @@
  * omc-root.js — Public URL prefix support for AgentHub mounting.
  *
  * When OneManCompany is served under /oneManCompany (or another OMC_ROOT_PATH),
- * absolute /api and /ws calls must be rewritten. This file must load before
- * other app scripts.
+ * absolute /api, /ws, and /assets calls must be rewritten. This file must load
+ * before other app scripts.
  */
 (function initOmcRoot(global) {
   const DEFAULT_ROOT = '/oneManCompany';
@@ -46,18 +46,25 @@
 
   global.omcUrl = omcUrl;
 
-  // Patch fetch() for absolute /api and /ws paths.
+  function needsPrefix(path) {
+    return (
+      path.startsWith('/api') ||
+      path.startsWith('/ws') ||
+      path.startsWith('/assets/')
+    );
+  }
+
+  // Patch fetch() for absolute /api, /ws, and /assets paths.
   if (typeof global.fetch === 'function') {
     const rawFetch = global.fetch.bind(global);
     global.fetch = function omcFetch(input, init) {
-      if (typeof input === 'string' && (input.startsWith('/api') || input.startsWith('/ws'))) {
+      if (typeof input === 'string' && needsPrefix(input)) {
         input = omcUrl(input);
       } else if (global.Request && input instanceof global.Request) {
         const url = input.url;
         try {
           const parsed = new URL(url, global.location.origin);
-          if (parsed.origin === global.location.origin &&
-              (parsed.pathname.startsWith('/api') || parsed.pathname.startsWith('/ws'))) {
+          if (parsed.origin === global.location.origin && needsPrefix(parsed.pathname)) {
             input = new global.Request(omcUrl(parsed.pathname + parsed.search), input);
           }
         } catch (_) { /* keep original */ }
@@ -75,7 +82,7 @@
       enumerable: desc.enumerable,
       get: desc.get,
       set(value) {
-        if (typeof value === 'string' && (value.startsWith('/api') || value.startsWith('/ws'))) {
+        if (typeof value === 'string' && needsPrefix(value)) {
           value = omcUrl(value);
         }
         desc.set.call(this, value);
@@ -89,14 +96,14 @@
 
   function rewriteTree(rootNode) {
     if (!rootNode || !rootNode.querySelectorAll) return;
-    rootNode.querySelectorAll('[src^="/api"], [href^="/api"]').forEach((el) => {
+    rootNode.querySelectorAll('[src^="/api"], [src^="/assets/"], [href^="/api"], [href^="/assets/"]').forEach((el) => {
       if (el.hasAttribute('src')) {
         const src = el.getAttribute('src');
-        if (src && src.startsWith('/api')) el.setAttribute('src', omcUrl(src));
+        if (src && needsPrefix(src)) el.setAttribute('src', omcUrl(src));
       }
       if (el.hasAttribute('href')) {
         const href = el.getAttribute('href');
-        if (href && href.startsWith('/api')) el.setAttribute('href', omcUrl(href));
+        if (href && needsPrefix(href)) el.setAttribute('href', omcUrl(href));
       }
     });
   }

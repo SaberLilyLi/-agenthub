@@ -112,7 +112,7 @@ const SRC   = 32;    // sprite tile size (px)
 const SCALE = 2;     // render scale (2× → 64px display tiles)
 const T     = SRC * SCALE;
 
-const TSET  = '/assets/office/tilesets/';
+const TSET  = (typeof omcUrl === 'function' ? omcUrl('/assets/office/tilesets/') : '/assets/office/tilesets/');
 
 // ─────────────────────────────────────────────────────────────────────────
 // Sprite sheet registry
