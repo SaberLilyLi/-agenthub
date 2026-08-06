@@ -1,7 +1,0 @@
-# Meeting Room A — default meeting room setup
-name: "A 会议室"
-type: "meeting_room"
-description: "可容纳 6 人的标准会议室，配有投影仪和白板。"
-capacity: 6
-position: [1, 8]
-sprite: "meeting_room"

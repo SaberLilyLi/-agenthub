@@ -1,7 +1,0 @@
-# Large Meeting Hall — dedicated for CEO all-hands meetings
-name: "全员大会堂"
-type: "meeting_room"
-description: "可容纳 100 人的大型会议厅，配有大屏幕和音响系统。用于 CEO 面向全公司的公告和指导；所有参会者会后必须理解并总结会议要点。不可用于项目或部门会议。"
-capacity: 100
-position: [5, 10]
-sprite: "meeting_room"
