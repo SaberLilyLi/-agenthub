@@ -231,6 +231,9 @@ export interface Agent {
     | null;
   cover?: (number | null) | Media;
   screenshots?: (number | Media)[] | null;
+  /**
+   * 本地与线上共用：填相对路径（如 /oneManCompany）会按当前访问域名自动打开；外链演示则填完整 https 地址。
+   */
   demoUrl?: string | null;
   featured?: boolean | null;
   status?: ('draft' | 'published' | 'archived') | null;

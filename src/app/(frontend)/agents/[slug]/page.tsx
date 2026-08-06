@@ -8,6 +8,7 @@ import { FavoriteButton } from '@/components/agent/FavoriteButton'
 import { ScreenshotGallery } from '@/components/agent/ScreenshotGallery'
 import { VersionList } from '@/components/agent/VersionList'
 import { getLatestVersionMap, getPayloadClient } from '@/lib/agentQueries'
+import { isExternalDemoUrl, resolveDemoUrl } from '@/lib/demoUrl'
 import { formatCount, relativeTime } from '@/lib/format'
 
 export default async function AgentDetail({ params }: { params: Promise<{ slug: string }> }) {
@@ -35,6 +36,8 @@ export default async function AgentDetail({ params }: { params: Promise<{ slug: 
   const cover = typeof agent.cover === 'object' && agent.cover ? agent.cover : null
   const tags = (agent.tags ?? []).map((item) => item?.tag).filter((tag): tag is string => Boolean(tag))
   const updatedAt = latestInfo?.publishedAt ?? agent.publishedAt ?? agent.updatedAt
+  const demoHref = resolveDemoUrl(agent.demoUrl)
+  const demoExternal = isExternalDemoUrl(agent.demoUrl)
 
   return (
     <article>
@@ -150,15 +153,15 @@ export default async function AgentDetail({ params }: { params: Promise<{ slug: 
             </dl>
             <div className="mt-5 flex flex-col gap-2 border-t border-[var(--border)] pt-4">
               {latest && <DownloadButton versionId={latest.id} agentName={agent.name} />}
-              {agent.demoUrl && (
+              {demoHref && (
                 <a
                   className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-[var(--border)] bg-white px-4 text-sm font-medium transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
-                  href={agent.demoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={demoHref}
+                  target={demoExternal ? '_blank' : undefined}
+                  rel={demoExternal ? 'noopener noreferrer' : undefined}
                 >
                   <MonitorPlay className="size-4" />
-                  在线体验
+                  在线演示
                 </a>
               )}
               <FavoriteButton agentId={agent.id} />

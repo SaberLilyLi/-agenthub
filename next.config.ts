@@ -12,6 +12,8 @@ const NEXT_PUBLIC_SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000')
 
+const OMC_ORIGIN = process.env.OMC_ORIGIN || 'http://127.0.0.1:8001'
+
 const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   output: 'standalone',
@@ -49,6 +51,25 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: true,
   redirects,
+  // Keep /oneManCompany/ as-is so the OMC rewrite is not stripped to /oneManCompany
+  // (which then triggers an absolute redirect to the backend :8001 origin).
+  skipTrailingSlashRedirect: true,
+  async rewrites() {
+    return [
+      {
+        source: '/oneManCompany',
+        destination: `${OMC_ORIGIN}/oneManCompany/`,
+      },
+      {
+        source: '/oneManCompany/',
+        destination: `${OMC_ORIGIN}/oneManCompany/`,
+      },
+      {
+        source: '/oneManCompany/:path*',
+        destination: `${OMC_ORIGIN}/oneManCompany/:path*`,
+      },
+    ]
+  },
   turbopack: {
     root: path.resolve(dirname),
   },

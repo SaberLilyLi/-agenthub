@@ -31,3 +31,18 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# OneManCompany local runtime / venv (also in agent/OneManCompany/.gitignore)
+agent/**/.venv/
+agent/**/.onemancompany/
+agent/**/.pytest_cache/
+agent/**/__pycache__/
+
+# OneManCompany upstream bulk not needed to run inside AgentHub
+# (re-fetch from https://github.com/1mancompany/OneManCompany if required)
+agent/OneManCompany/tests/
+agent/OneManCompany/docs/
+agent/OneManCompany/mkdocs-docs/
+agent/OneManCompany/mkdocs.yml
+agent/OneManCompany/.github/
+agent/OneManCompany/img/

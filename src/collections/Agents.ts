@@ -133,7 +133,16 @@ export const Agents: CollectionConfig = {
       admin: { condition: showToContentAdmin },
       access: { create: contentAdminOnly, update: contentAdminOnly },
     },
-    { name: 'demoUrl', label: '演示地址', type: 'text' },
+    {
+      name: 'demoUrl',
+      label: '演示地址',
+      type: 'text',
+      admin: {
+        placeholder: '/oneManCompany 或 https://example.com/demo',
+        description:
+          '本地与线上共用：填相对路径（如 /oneManCompany）会按当前访问域名自动打开；外链演示则填完整 https 地址。',
+      },
+    },
     {
       name: 'featured',
       label: '推荐展示',

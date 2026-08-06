@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { BadgeCheck, Download } from 'lucide-react'
+import { BadgeCheck, Download, MonitorPlay } from 'lucide-react'
 
 import { formatCount, relativeTime } from '@/lib/format'
+import { isExternalDemoUrl, resolveDemoUrl } from '@/lib/demoUrl'
 import { cn } from '@/utilities/ui'
 
 import { AgentIcon } from './AgentIcon'
@@ -10,6 +11,8 @@ import type { AgentCardData } from './types'
 export function AgentCard({ agent, className }: { agent: AgentCardData; className?: string }) {
   const detailHref = `/agents/${agent.slug}`
   const updatedLabel = agent.lastActiveAt ? relativeTime(agent.lastActiveAt) : ''
+  const demoHref = resolveDemoUrl(agent.demoUrl)
+  const demoExternal = isExternalDemoUrl(agent.demoUrl)
 
   return (
     <article
@@ -56,18 +59,31 @@ export function AgentCard({ agent, className }: { agent: AgentCardData; classNam
       )}
 
       <div className="mt-auto">
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--border)] pt-3 text-xs text-slate-500">
+        <div className="mt-4 flex items-center justify-between gap-2 border-t border-[var(--border)] pt-3 text-xs text-slate-500">
           <span className="inline-flex items-center gap-1">
             <Download className="size-3.5" />
             {formatCount(agent.downloadCount)}
           </span>
-          {updatedLabel && <span className="truncate">更新于 {updatedLabel}</span>}
-          <Link
-            href={detailHref}
-            className="relative z-10 shrink-0 rounded-md border border-[var(--brand)] px-3.5 py-1.5 text-sm font-medium text-[var(--brand)] transition hover:bg-[var(--brand)] hover:text-white"
-          >
-            使用
-          </Link>
+          {updatedLabel && <span className="min-w-0 flex-1 truncate">更新于 {updatedLabel}</span>}
+          <div className="relative z-10 flex shrink-0 items-center gap-2">
+            {demoHref && (
+              <a
+                href={demoHref}
+                target={demoExternal ? '_blank' : undefined}
+                rel={demoExternal ? 'noopener noreferrer' : undefined}
+                className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+              >
+                <MonitorPlay className="size-3.5" />
+                在线演示
+              </a>
+            )}
+            <Link
+              href={detailHref}
+              className="rounded-md border border-[var(--brand)] px-3.5 py-1.5 text-sm font-medium text-[var(--brand)] transition hover:bg-[var(--brand)] hover:text-white"
+            >
+              使用
+            </Link>
+          </div>
         </div>
       </div>
     </article>

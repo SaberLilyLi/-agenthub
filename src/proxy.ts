@@ -190,6 +190,12 @@ async function protectAbuse(request: NextRequest) {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // OneManCompany is proxied to a separate FastAPI process — skip AgentHub gates.
+  if (pathname === '/oneManCompany' || pathname.startsWith('/oneManCompany/')) {
+    return NextResponse.next()
+  }
+
   const uploadProtection = protectUploadSize(request)
   if (uploadProtection) return uploadProtection
   const abuseProtection = await protectAbuse(request)

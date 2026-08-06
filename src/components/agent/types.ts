@@ -29,6 +29,8 @@ export type AgentCardData = {
   coverAlt: string
   latestVersion: string | null
   lastActiveAt: string | null
+  /** Raw demo path or absolute URL from CMS; resolve with resolveDemoUrl when linking. */
+  demoUrl: string | null
 }
 
 export type HomeStats = {

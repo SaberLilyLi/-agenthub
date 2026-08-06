@@ -104,6 +104,7 @@ export function toCardData(agent: Agent, versions?: Map<number, VersionInfo>): A
     coverAlt: cover?.alt ?? agent.name,
     latestVersion: version?.version ?? null,
     lastActiveAt: version?.publishedAt ?? agent.publishedAt ?? agent.updatedAt ?? null,
+    demoUrl: agent.demoUrl?.trim() ? agent.demoUrl.trim() : null,
   }
 }
 
