@@ -94,7 +94,7 @@ export const AgentPackageUpload: UIFieldClientComponent = () => {
     <section className="agent-package-upload" aria-label="Skill 文件投稿">
       <h3>上传 Skill 文件</h3>
       <p className="agent-package-upload__description">
-        ZIP/RAR 文件将保存到服务器本地，管理员审核通过后才发布版本。
+        ZIP/RAR 文件将保存到服务器本地，管理员审核通过后才发布版本。包内可含 Windows 程序（.exe / .dll / .msi），请勿包含脚本类文件。
       </p>
 
       {canUpload ? (

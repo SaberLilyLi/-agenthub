@@ -5,7 +5,8 @@ const ZIP_CENTRAL_DIRECTORY = 0x02014b50
 const MAX_ARCHIVE_ENTRIES = 200
 const MAX_UNCOMPRESSED_BYTES = 500 * 1024 * 1024
 const MAX_COMPRESSION_RATIO = 100
-const blockedExtensions = new Set(['.exe', '.dll', '.bat', '.cmd', '.com', '.ps1', '.sh', '.msi', '.jar', '.js', '.vbs', '.scr'])
+/** Windows 安装包可含 .exe/.dll/.msi；仍拦截脚本与高风险载荷。 */
+const blockedExtensions = new Set(['.bat', '.cmd', '.com', '.ps1', '.sh', '.jar', '.js', '.vbs', '.scr'])
 const nestedArchiveExtensions = new Set(['.zip', '.rar', '.7z', '.tar', '.gz', '.bz2', '.xz'])
 
 export class UploadSecurityError extends Error {}
@@ -16,7 +17,7 @@ function reject(message: string): never { throw new UploadSecurityError(message)
 function safeEntryName(name: string) {
   if (!name || name.includes('\0') || name.includes('\\') || name.startsWith('/') || name.startsWith('../') || name.includes('/../')) reject('压缩包包含不安全的文件路径')
   const extension = extensionOf(name)
-  if (blockedExtensions.has(extension)) reject('压缩包不能包含可执行文件')
+  if (blockedExtensions.has(extension)) reject('压缩包不能包含脚本或危险可执行文件')
   if (nestedArchiveExtensions.has(extension)) reject('压缩包不能包含嵌套压缩包')
 }
 

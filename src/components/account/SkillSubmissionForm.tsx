@@ -141,6 +141,7 @@ export function SkillSubmissionForm({ categories }: { categories: Category[] }) 
       <label className="block text-sm font-medium">
         Skill 压缩包（最大 {MAX_SKILL_FILE_LABEL}）<RequiredMark />
         <Input className="mt-2" name="file" type="file" accept=".zip,application/zip,.rar,application/vnd.rar" aria-invalid={Boolean(errors.file)} />
+        <p className="mt-1.5 text-xs text-slate-500">支持 ZIP/RAR；包内可含 Windows 程序（.exe / .dll / .msi），请勿包含脚本类文件。</p>
         <FieldError message={errors.file} />
       </label>
 
