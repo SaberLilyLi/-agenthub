@@ -85,7 +85,7 @@ describe('local Skill review flow', () => {
     await payload.update({
       collection: 'skill-submissions',
       id: submission.id,
-      data: { reviewStatus: 'approved' },
+      data: { reviewStatus: 'approved', reviewNote: '本地集成测试通过' },
       user: reviewer,
       overrideAccess: false,
     })
@@ -125,7 +125,7 @@ describe('local Skill review flow', () => {
     await payload.update({
       collection: 'skill-submissions',
       id: rejectedSubmission.id,
-      data: { reviewStatus: 'rejected' },
+      data: { reviewStatus: 'rejected', reviewNote: '本地集成测试拒绝' },
       user: reviewer,
       overrideAccess: false,
     })

@@ -268,9 +268,6 @@ export interface AgentVersion {
  */
 export interface SkillSubmission {
   id: number;
-  reviewer?: (number | null) | User;
-  reviewNote?: string | null;
-  reviewedAt?: string | null;
   owner: number | User;
   agent?: (number | null) | Agent;
   name: string;
@@ -287,6 +284,12 @@ export interface SkillSubmission {
   version: string;
   changelog?: string | null;
   reviewStatus: 'pending' | 'approved' | 'rejected';
+  /**
+   * 审核通过或拒绝时必填
+   */
+  reviewNote?: string | null;
+  reviewer?: (number | null) | User;
+  reviewedAt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -709,9 +712,6 @@ export interface DownloadRecordsSelect<T extends boolean = true> {
  * via the `definition` "skill-submissions_select".
  */
 export interface SkillSubmissionsSelect<T extends boolean = true> {
-  reviewer?: T;
-  reviewNote?: T;
-  reviewedAt?: T;
   owner?: T;
   agent?: T;
   name?: T;
@@ -728,6 +728,9 @@ export interface SkillSubmissionsSelect<T extends boolean = true> {
   version?: T;
   changelog?: T;
   reviewStatus?: T;
+  reviewNote?: T;
+  reviewer?: T;
+  reviewedAt?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
