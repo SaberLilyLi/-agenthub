@@ -271,6 +271,9 @@ export interface SkillSubmission {
   owner: number | User;
   agent?: (number | null) | Agent;
   name: string;
+  /**
+   * 仅小写字母、数字和连字符
+   */
   slug: string;
   summary: string;
   description?: string | null;
@@ -281,11 +284,14 @@ export interface SkillSubmission {
         id?: string | null;
       }[]
     | null;
+  /**
+   * 格式为 x.y.z
+   */
   version: string;
   changelog?: string | null;
   reviewStatus: 'pending' | 'approved' | 'rejected';
   /**
-   * 审核通过或拒绝时必填
+   * 将审核状态设为「通过」或「拒绝」时必须填写，保存前会校验
    */
   reviewNote?: string | null;
   reviewer?: (number | null) | User;

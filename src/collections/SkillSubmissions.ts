@@ -7,9 +7,18 @@ import { isActivePlatformUser } from '../access/isActivePlatformUser'
 import { localSkillSubmissionUrl, skillFileTypes } from '../lib/skillSubmission'
 
 const relationId = (value: number | { id: number }) => typeof value === 'number' ? value : value.id
+const validSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const validVersion = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/
 
 const reviewError = (message: string): never => {
   throw new APIError(message, 400)
+}
+
+const isEmpty = (value: unknown) => {
+  if (value === null || value === undefined) return true
+  if (typeof value === 'string') return !value.trim()
+  if (Array.isArray(value)) return value.length === 0
+  return false
 }
 
 const publishApprovedSubmission: CollectionAfterChangeHook = async ({ doc, operation, previousDoc, req }) => {
@@ -156,16 +165,85 @@ export const SkillSubmissions: CollectionConfig = {
     filesRequiredOnCreate: true,
   },
   fields: [
-    { name: 'owner', label: '投稿用户', type: 'relationship', relationTo: 'users', required: true, admin: { readOnly: true }, access: { create: () => false, update: () => false } },
+    {
+      name: 'owner',
+      label: '投稿用户',
+      type: 'relationship',
+      relationTo: 'users',
+      required: true,
+      admin: { readOnly: true },
+      access: { create: () => false, update: () => false },
+      validate: (value: unknown) => (isEmpty(value) ? '请选择投稿用户' : true),
+    },
     { name: 'agent', label: '目标智能体', type: 'relationship', relationTo: 'agents', admin: { readOnly: true }, access: { create: () => false, update: () => false } },
-    { name: 'name', label: 'Skill 名称', type: 'text', required: true },
-    { name: 'slug', label: '标识', type: 'text', required: true },
-    { name: 'summary', label: '简介', type: 'textarea', required: true, maxLength: 180 },
-    { name: 'description', label: '详细介绍', type: 'textarea' },
-    { name: 'category', label: '分类', type: 'relationship', relationTo: 'categories', required: true },
-    { name: 'tags', label: '标签', type: 'array', fields: [{ name: 'tag', label: '标签', type: 'text', required: true }] },
-    { name: 'version', label: '版本号', type: 'text', required: true },
-    { name: 'changelog', label: '更新说明', type: 'textarea' },
+    {
+      name: 'name',
+      label: 'Skill 名称',
+      type: 'text',
+      required: true,
+      admin: { placeholder: '请输入 Skill 名称' },
+      validate: (value: unknown) => (isEmpty(value) ? '请填写 Skill 名称' : true),
+    },
+    {
+      name: 'slug',
+      label: '标识',
+      type: 'text',
+      required: true,
+      admin: { placeholder: '例如 workbuddy-desktop-helper', description: '仅小写字母、数字和连字符' },
+      validate: (value: unknown) => {
+        if (isEmpty(value)) return '请填写标识'
+        if (!validSlug.test(String(value).trim())) return '标识仅支持小写字母、数字和连字符，例如 workbuddy-desktop-helper'
+        return true
+      },
+    },
+    {
+      name: 'summary',
+      label: '简介',
+      type: 'textarea',
+      required: true,
+      maxLength: 180,
+      admin: { placeholder: '请用一句话介绍该 Skill（180 字以内）' },
+      validate: (value: unknown) => {
+        if (isEmpty(value)) return '请填写简介'
+        if (String(value).trim().length > 180) return '简介不能超过 180 字'
+        return true
+      },
+    },
+    { name: 'description', label: '详细介绍', type: 'textarea', admin: { placeholder: '可选，补充功能说明与使用场景' } },
+    {
+      name: 'category',
+      label: '分类',
+      type: 'relationship',
+      relationTo: 'categories',
+      required: true,
+      validate: (value: unknown) => (isEmpty(value) ? '请选择分类' : true),
+    },
+    {
+      name: 'tags',
+      label: '标签',
+      type: 'array',
+      labels: { singular: '标签', plural: '标签' },
+      fields: [{
+        name: 'tag',
+        label: '标签',
+        type: 'text',
+        required: true,
+        validate: (value: unknown) => (isEmpty(value) ? '请填写标签' : true),
+      }],
+    },
+    {
+      name: 'version',
+      label: '版本号',
+      type: 'text',
+      required: true,
+      admin: { placeholder: '例如 1.0.0', description: '格式为 x.y.z' },
+      validate: (value: unknown) => {
+        if (isEmpty(value)) return '请填写版本号'
+        if (!validVersion.test(String(value).trim())) return '版本号格式应为 x.y.z，例如 1.0.0'
+        return true
+      },
+    },
+    { name: 'changelog', label: '更新说明', type: 'textarea', admin: { placeholder: '可选，说明本版本改动' } },
     {
       name: 'reviewStatus',
       label: '审核状态',
@@ -178,14 +256,26 @@ export const SkillSubmissions: CollectionConfig = {
         { label: '拒绝', value: 'rejected' },
       ],
       access: { create: () => false, update: ({ req }) => hasReviewerRole(req.user) },
+      validate: (value: unknown) => (isEmpty(value) ? '请选择审核状态' : true),
     },
     {
       name: 'reviewNote',
       label: '审核意见',
       type: 'textarea',
       maxLength: 1000,
-      admin: { description: '审核通过或拒绝时必填' },
+      admin: {
+        placeholder: '审核通过或拒绝时必填',
+        description: '将审核状态设为「通过」或「拒绝」时必须填写，保存前会校验',
+      },
       access: { create: () => false, update: ({ req }) => hasReviewerRole(req.user) },
+      validate: (value: unknown, { siblingData }) => {
+        const status = String((siblingData as { reviewStatus?: string } | undefined)?.reviewStatus || '')
+        if (['approved', 'rejected'].includes(status) && isEmpty(value)) {
+          return '审核通过或拒绝时必须填写审核意见'
+        }
+        if (value && String(value).length > 1000) return '审核意见不能超过 1000 字'
+        return true
+      },
     },
     { name: 'reviewer', label: '审核人', type: 'relationship', relationTo: 'users', admin: { readOnly: true }, access: { create: () => false, update: () => false } },
     { name: 'reviewedAt', label: '审核时间', type: 'date', admin: { readOnly: true }, access: { create: () => false, update: () => false } },
